@@ -5,7 +5,7 @@
  * @author Johan Hasselqvist
  */
  
- $number_of_ghosts = 5;
+ $number_of_ghosts = 6;
 ?>
 <!DOCTYPE html>
 <html>
@@ -38,10 +38,12 @@
 		.ball {
 			fill: white;
 		}
-		<!--#ball_20_20, #ball_20_380, #ball_380_20, #ball_380_380 {
+		/*
+		#ball_20_20, #ball_20_380, #ball_380_20, #ball_380_380 {
 			stroke-width: 5;
 			stroke: white;
-		}-->
+		}
+		*/
 		#win_or_lose_text {
 			color: white;
 			position: absolute;
@@ -70,9 +72,18 @@
 			fill: pink;
 			stroke: none;
 		}
+		<?php
+			for ($ghost_nr = 6; $ghost_nr <= $number_of_ghosts; $ghost_nr++) {
+				echo ".ghost{$ghost_nr} {\n";
+				echo "	fill: purple;\n"; 
+				echo "	stroke: none;\n";
+				echo "}\n";
+			}
+		?>
 		.ghost_eye {
 			stroke: white;
 			stroke-width: 2;
+			fill: black;
 		}
 		circle {
 			fill: none;
@@ -157,10 +168,14 @@
 		<!-- Start of Ghosts -->
 		<?php
 			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
-				echo "\t\t<circle id='ghost{$ghost_nr}_top'  class='ghost{$ghost_nr}'	   cx='200'	cy='180' r='12' />\n";
-				echo "\t\t<rect	  id='ghost{$ghost_nr}_bot'  class='ghost{$ghost_nr}'	    x='188'	 y='180' height='16' width='24' />\n";
-				echo "\t\t<circle id='ghost{$ghost_nr}_eye1' class='ghost_eye' cx='195'	cy='180' r='2' />\n";
-				echo "\t\t<circle id='ghost{$ghost_nr}_eye2' class='ghost_eye' cx='205'	cy='180' r='2' />\n";
+				$ghost_start_y_pos = 200;
+				if ($ghost_nr <= 3) {
+					$ghost_start_y_pos = 250 - $ghost_nr * 32;
+				}
+				echo "\t\t<circle id='ghost{$ghost_nr}_top'  class='ghost{$ghost_nr}'	   cx='200'	cy='{$ghost_start_y_pos}' r='12' />\n";
+				echo "\t\t<rect	  id='ghost{$ghost_nr}_bot'  class='ghost{$ghost_nr}'	    x='188'	 y=0' height='16' width='24' />\n";
+				echo "\t\t<circle id='ghost{$ghost_nr}_eye1' class='ghost_eye' cx='195'	cy='0' r='2' />\n";
+				echo "\t\t<circle id='ghost{$ghost_nr}_eye2' class='ghost_eye' cx='205'	cy='0' r='2' />\n";
 			}
 		?>
 		<!-- End of Ghosts -->
@@ -640,7 +655,7 @@
 		
 		?>
 		
-		
+			
 		window.onload = main();
 	</script>
 </body>
