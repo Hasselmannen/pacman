@@ -4,6 +4,8 @@
  *
  * @author Johan Hasselqvist
  */
+ 
+ $number_of_ghosts = 5;
 ?>
 <!DOCTYPE html>
 <html>
@@ -36,10 +38,10 @@
 		.ball {
 			fill: white;
 		}
-		#ball_20_20, #ball_20_380, #ball_380_20, #ball_380_380 {
+		<!--#ball_20_20, #ball_20_380, #ball_380_20, #ball_380_380 {
 			stroke-width: 5;
 			stroke: white;
-		}
+		}-->
 		#win_or_lose_text {
 			color: white;
 			position: absolute;
@@ -48,13 +50,32 @@
 			font-size: 80px;
 			text-align: center;
 		}
-		.ghost {
+		.ghost1 {
 			fill: red;
+			stroke: none;
+		}
+		.ghost2 {
+			fill: blue;
+			stroke: none;
+		}
+		.ghost3 {
+			fill: green;
+			stroke: none;
+		}
+		.ghost4 {
+			fill: orange;
+			stroke: none;
+		}
+		.ghost5 {
+			fill: pink;
 			stroke: none;
 		}
 		.ghost_eye {
 			stroke: white;
 			stroke-width: 2;
+		}
+		circle {
+			fill: none;
 		}
 	</style>
 </head>
@@ -67,6 +88,7 @@
 		 viewport="0 0 400 400">
 				
 		<?php
+			// Generates the white balls
 			for ($y = 20; $y < 400; $y = $y + 40) {
 				echo "\t\t<circle id='ball_20_{$y}' class='ball' cx='20' cy='{$y}' r='4' />\n";
 				for ($x = 60; $x <= 400; $x = $x + 40) {
@@ -76,38 +98,74 @@
 				}
 			}
 		?>
+		
+		<!-- Start of the player -->
 		<g>
-		<circle id="player" cx="200" cy="100" r="15" />
-		<polygon id="mouth" points="200,100 185,93 185,107" />
+		<circle id="player" cx="220" cy="100" r="15" />
+		<polygon id="mouth" points="220,100 205,93 205,107" />
 		</g>
+		<!-- End of player -->
 		
-		<rect id="block1" x="40" y="40" height="40" width="120" />
-		<rect id="block2" x="240" y="40" height="40" width="120" />
-		<rect id="block3" x="-3" y="120" height="40" width="83" />
-		<rect id="block4" x="320" y="120" height="40" width="83" />
-			<!-- The following five lines are not visible, they are only there for collision detection -->
-			<rect id="block10" x="120" y="220" height="20" width="60" />
-			<rect id="block11" x="120" y="120" height="100" width="20" />
-			<rect id="block12" x="140" y="120" height="20" width="120" />
-			<rect id="block13" x="260" y="120" height="100" width="20" />
-			<rect id="block14" x="220" y="220" height="20" width="60" />
-			<!-- End of invisible blocks -->
-		<polygon class="box" id="ghost_box" points="140,220 180,220 180,240 120,240 120,120 280,120 280,240 220,240 220,220 260,220 260,140 140,140" />
-		<rect id="block5" x="40" y="200" height="40" width="40" />
-		<rect id="block6" x="320" y="200" height="40" width="40" />
-		<rect id="block7" x="40" y="280" height="40" width="80" />
-		<rect id="block8" x="160" y="280" height="40" width="80" />
-		<rect id="block9" x="280" Y="280" height="40" width="80" />
-		<rect id="block0" x="40" y="360" height="43" width="320" />
+		<!-- Start of waypoints where it is possible to turn -->
+		<circle id="waypoint1" cx="20"  cy="20" r="5" />
+		<circle id="waypoint2" cx="220" cy="20" r="5" />
+		<circle id="waypoint3" cx="380" cy="20" r="5" />
 		
+		<circle id="waypoint4" cx="20"  cy="100" r="5" />
+		<circle id="waypoint5" cx="100" cy="100" r="5" />
+		<circle id="waypoint6" cx="220" cy="100" r="5" />
+		<circle id="waypoint7" cx="300" cy="100" r="5" />
+		<circle id="waypoint8" cx="380" cy="100" r="5" />
+		
+		<circle id="waypoint9" cx="20"  cy="180" r="5" />
+		<circle id="waypoint10" cx="100" cy="180" r="5" />
+		<circle id="waypoint11" cx="300" cy="180" r="5" />
+		<circle id="waypoint12" cx="380" cy="180" r="5" />
+		
+		<circle id="waypoint13" cx="20" cy="260" r="5" />
+		<circle id="waypoint14" cx="100" cy="260" r="5" />
+		<circle id="waypoint15" cx="140" cy="260" r="5" />
+		<circle id="waypoint16" cx="260" cy="260" r="5" />
+		<circle id="waypoint17" cx="300" cy="260" r="5" />
+		<circle id="waypoint18" cx="380" cy="260" r="5" />
+		
+		<circle id="waypoint19" cx="20" cy="340" r="5" />
+		<circle id="waypoint20" cx="140" cy="340" r="5" />
+		<circle id="waypoint21" cx="260" cy="340" r="5" />
+		<circle id="waypoint22" cx="380" cy="340" r="5" />
+		
+		<circle id="waypoint23" cx="20" cy="380" r="5" />
+		<circle id="waypoint24" cx="380" cy="380" r="5" />
+		<!-- End of waypoints -->
+		
+		<!-- Start of the blocks on the map -->
+		<rect x="40" y="40" height="40" width="160" />
+		<rect x="240" y="40" height="40" width="120" />
+		<rect x="-3" y="120" height="40" width="83" />
+		<rect x="320" y="120" height="40" width="83" />
+		<polygon id="ghost_box" points="140,220 180,220 180,240 120,240 120,120 280,120 280,240 220,240 220,220 260,220 260,140 140,140" />
+		<rect x="40" y="200" height="40" width="40" />
+		<rect x="320" y="200" height="40" width="40" />
+		<rect x="40" y="280" height="40" width="80" />
+		<rect x="160" y="280" height="40" width="80" />
+		<rect x="280" Y="280" height="40" width="80" />
+		<rect x="40" y="360" height="43" width="320" />
+		<!-- End of blocks -->
+		
+		
+		
+		<!-- Start of Ghosts -->
 		<?php
-			for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
-				echo "\t\t<circle id='ghost{$ghost_nr}_top'  class='ghost'	   cx='200'	cy='180' r='12' />\n";
-				echo "\t\t<rect	  id='ghost{$ghost_nr}_bot'  class='ghost'	    x='188'	 y='180' height='16' width='24' />\n";
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+				echo "\t\t<circle id='ghost{$ghost_nr}_top'  class='ghost{$ghost_nr}'	   cx='200'	cy='180' r='12' />\n";
+				echo "\t\t<rect	  id='ghost{$ghost_nr}_bot'  class='ghost{$ghost_nr}'	    x='188'	 y='180' height='16' width='24' />\n";
 				echo "\t\t<circle id='ghost{$ghost_nr}_eye1' class='ghost_eye' cx='195'	cy='180' r='2' />\n";
 				echo "\t\t<circle id='ghost{$ghost_nr}_eye2' class='ghost_eye' cx='205'	cy='180' r='2' />\n";
 			}
 		?>
+		<!-- End of Ghosts -->
+		
+		
 	</svg>
 		<p id="win_or_lose_text"></p>
 	
@@ -115,79 +173,184 @@
 		var game_screen = document.getElementById("game_screen");
 		var player = document.getElementById("player");
 		var mouth = document.getElementById("mouth");
-		var player_x_speed = 0;
-		var player_y_speed = 0;
+		var player_x_speed = 1;
+		var player_y_speed = 1;
 		var player_x_pos;
 		var player_y_pos;
 		var total_balls_eaten = 0;
 		var has_not_won = true;
 		var has_not_lost = true;
+		var current_key;
+		var player_travel_direction;
+		var ghost_speed = 0.5;
+		
+		var ghost1_roll;
+		var ghost2_roll;
+		var ghost3_roll;
+		var ghost4_roll;
+		var ghost5_roll;
 		
 		<?php
-			for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
+		
+			
+		
+			// Waypoint position
+			for ($waypoint_nr = 1; $waypoint_nr < 25; $waypoint_nr++) {
+				echo "var waypoint{$waypoint_nr}_x_pos = document.getElementById('waypoint{$waypoint_nr}').getAttribute('cx');\n";
+				echo "var waypoint{$waypoint_nr}_y_pos = document.getElementById('waypoint{$waypoint_nr}').getAttribute('cy');\n";
+			}
+	
+			// Arrays to tell which direction it is possible to travel from every waypoint
+			$waypoint_arrays = array(
+								array(),		/* There is no waypoint with the number 0 */
+								array(0,0,1,1), /* 1 */
+								array(1,0,1,1),
+								array(1,0,0,1),
+								array(0,1,1,0),
+								array(1,0,1,1),
+								array(1,1,1,0),
+								array(1,0,1,1),
+								array(1,1,0,0),
+								array(0,0,1,1),
+								array(1,1,0,1), /* 10 */
+								array(0,1,1,1),
+								array(1,0,0,1),
+								array(0,1,1,1),
+								array(1,1,1,0),
+								array(1,0,1,1),
+								array(1,0,1,1),
+								array(1,1,1,0),
+								array(1,1,0,1),
+								array(0,1,1,1),
+								array(1,1,1,0), /* 20 */
+								array(1,1,1,0),
+								array(1,1,0,1),
+								array(0,1,0,0),
+								array(0,1,0,0)
+							   );
+		?>
+		
+		
+		
+		
+		//Start of Ghost variables
+		<?php
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
 				echo "var ghost{$ghost_nr}_x_min;\n";
 				echo "var ghost{$ghost_nr}_x_max;\n";
 				echo "var ghost{$ghost_nr}_y_min;\n";
 				echo "var ghost{$ghost_nr}_y_max;\n";
 			}
-			echo "\n";
-			for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
 				echo "var ghost{$ghost_nr}_y_pos;\n";
 			}
-			echo "\n";
-			for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
 				echo "var ghost{$ghost_nr} = document.getElementById('ghost{$ghost_nr}_top');\n";
 			}
-			echo "\n";
-			for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
-				echo "var ghost{$ghost_nr}_y_speed = -1;\n";
-			}
-			echo "\n";
-			for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
 				echo "var ghost{$ghost_nr}_x_speed = 0;\n";
 			}
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+				echo "var ghost{$ghost_nr}_travel_direction = 'down';\n";
+			}
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+				echo "var ghost{$ghost_nr}_exited_box = false;\n";
+			}
 		?>
+		// End of Ghost variables
 		
-		var block_y_max = new Array();
-		var block_y_min = new Array();
-		var block_x_max = new Array();
-		var block_x_min = new Array();
-		var number_of_blocks = 14;
 		
-		for(block_nr = 0; block_nr <= number_of_blocks; block_nr++) {
-			block_x_min[block_nr] = parseFloat(document.getElementById("block" + block_nr).getAttribute("x")) - 15;
-			block_x_max[block_nr] = parseFloat(document.getElementById("block" + block_nr).getAttribute("x")) + parseFloat(document.getElementById("block" + block_nr).getAttribute("width")) + 15;
-			block_y_min[block_nr] = parseFloat(document.getElementById("block" + block_nr).getAttribute("y")) - 15;
-			block_y_max[block_nr] = parseFloat(document.getElementById("block" + block_nr).getAttribute("y")) + parseFloat(document.getElementById("block" + block_nr).getAttribute("height")) + 15;
-		}
 		
 		function main(){
-		
-			if (total_balls_eaten >= 62) {
+			if (total_balls_eaten >= 61) {
 				win();
 			}
 			<?php
-				echo "else if(player_x_pos <= ghost1_x_max && player_x_pos >= ghost1_x_min && player_y_pos <= ghost1_y_max && player_y_pos >= ghost1_y_min) {";
-				echo "lose();";
-				echo "}";
+				// Check Ghost-collision
+				for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+					echo "else if(player_x_pos <= ghost{$ghost_nr}_x_max && player_x_pos >= ghost{$ghost_nr}_x_min && player_y_pos <= ghost{$ghost_nr}_y_max && player_y_pos >= ghost{$ghost_nr}_y_min) {";
+					echo "	lose();";
+					echo "}";
+				}
 			?>
 			else {
 			player_x_pos = parseFloat(player.getAttribute("cx"));
 			player_y_pos = parseFloat(player.getAttribute("cy"));
 			
-			<?php
-				for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
-					echo "ghost{$ghost_nr}_x_min = parseFloat(ghost{$ghost_nr}.getAttribute('cx')) - 27;\n";
-					echo "ghost{$ghost_nr}_x_max = parseFloat(ghost{$ghost_nr}.getAttribute('cx')) + 27;\n";
-					echo "ghost{$ghost_nr}_y_min = parseFloat(ghost{$ghost_nr}.getAttribute('cy')) - 27;\n";
-					echo "ghost{$ghost_nr}_y_max = parseFloat(ghost{$ghost_nr}.getAttribute('cy')) + parseFloat(document.getElementById('ghost{$ghost_nr}_bot').getAttribute('height')) + 15;\n";
-				}
-				for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
-					echo "ghost{$ghost_nr}_x_pos = parseFloat(ghost{$ghost_nr}.getAttribute('cx'));\n";
-					echo "ghost{$ghost_nr}_y_pos = parseFloat(ghost{$ghost_nr}.getAttribute('cy'));\n";
-				}
-			?>
 			
+			
+			
+			
+			
+			
+			
+			// Code so that Pacman can turn around
+			if (current_key == "left" && player_travel_direction == "right") {
+				player_travel_direction = "left";
+			}
+			else if (current_key == "up" && player_travel_direction == "down") {
+				player_travel_direction = "up";
+			}
+			else if (current_key == "right" && player_travel_direction == "left") {
+				player_travel_direction = "right";
+			}
+			else if (current_key == "down" && player_travel_direction == "up") {
+				player_travel_direction = "down";
+			}
+			
+			// Start of if-statements that checks when pacman is at a waypoint, and they changes direction depending on which key was pressed
+			else if (current_key == "left" && ((player_x_pos == waypoint2_x_pos && player_y_pos == waypoint2_y_pos)<?php
+																												foreach ($waypoint_arrays as $key => $value) {
+																													$waypoint_nr = $key;
+																													foreach ($value as $key => $value) {
+																														if ($key == 0 && $value == 1 && $waypoint_nr !== 2) {
+																															echo " || (player_x_pos == waypoint{$waypoint_nr}_x_pos && player_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																														}
+																													}
+																												}
+																											  ?>)) {
+				player_travel_direction = "left";
+			}
+			else if (current_key == "up" && ((player_x_pos == waypoint4_x_pos && player_y_pos == waypoint4_y_pos)<?php
+																												foreach ($waypoint_arrays as $key => $value) {
+																													$waypoint_nr = $key;
+																													foreach ($value as $key => $value) {
+																														if ($key == 1 && $value == 1 && $waypoint_nr !== 4) {
+																															echo " || (player_x_pos == waypoint{$waypoint_nr}_x_pos && player_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																														}
+																													}
+																												}
+																											  ?>)) {
+				player_travel_direction = "up";
+			}
+			else if (current_key == "right" && ((player_x_pos == waypoint1_x_pos && player_y_pos == waypoint1_y_pos)<?php
+																												foreach ($waypoint_arrays as $key => $value) {
+																													$waypoint_nr = $key;
+																													foreach ($value as $key => $value) {
+																														if ($key == 2 && $value == 1 && $waypoint_nr !== 1) {
+																															echo " || (player_x_pos == waypoint{$waypoint_nr}_x_pos && player_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																														}
+																													}
+																												}
+																											  ?>)) {
+				player_travel_direction = "right";
+			}
+			else if (current_key == "down" && ((player_x_pos == waypoint1_x_pos && player_y_pos == waypoint1_y_pos)<?php
+																												foreach ($waypoint_arrays as $key => $value) {
+																													$waypoint_nr = $key;
+																													foreach ($value as $key => $value) {
+																														if ($key == 3 && $value == 1 && $waypoint_nr !== 1) {
+																															echo " || (player_x_pos == waypoint{$waypoint_nr}_x_pos && player_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																														}
+																													}
+																												}
+																											  ?>)) {
+				player_travel_direction = "down";	
+			}
+			// End of if-statements for turning
+			
+			
+			// Code to eat the balls
 			for (y = 20; y <= 400; y = y + 40) {
 				for (x = 60; x <= 400; x = x + 40) {
 					if (player_x_pos <= x + 10 && player_x_pos >= x - 10 && player_y_pos <= y + 10 && player_y_pos >= y - 10 && document.getElementById("ball_" + x + "_" + y) != null ) {
@@ -203,104 +366,185 @@
 					total_balls_eaten ++;
 				}
 			}
+			// End of code to eat the balls
 			
-			if ((player_x_pos <= 15 && player_x_speed == 1) || (player_x_pos >= 385 && player_x_speed == -1)) {
-				player_x_pos = player_x_pos;
-				player_x_speed = 0;
-			}
-		
-			<?php
-				for($block_nr = 0; $block_nr <= 14; $block_nr++) {
-					echo "
-						else if (player_x_speed == 1 && block_x_min[{$block_nr}] <= player_x_pos && block_x_max[{$block_nr}] >= player_x_pos && block_y_max[{$block_nr}] >= player_y_pos && block_y_min[{$block_nr}] <= player_y_pos) {
-							player_x_pos = player_x_pos + 2;
-							player_x_speed = 0;
-						}
-						else if (player_x_speed == -1 && block_x_min[{$block_nr}] <= player_x_pos && block_x_max[{$block_nr}] >= player_x_pos && block_y_max[{$block_nr}] >= player_y_pos && block_y_min[{$block_nr}] <= player_y_pos) {
-							player_x_pos = player_x_pos - 2;
-							player_x_speed = 0;
-						}
-					";
-				}
-			?>
-			else {
-				player_x_pos = player_x_pos - player_x_speed;
-				
-				if(player_x_speed == 1) {
-					mouth.setAttribute("points", player_x_pos + "," + player_y_pos + " " + (player_x_pos - 15) + "," + (player_y_pos - 7) + " " + (player_x_pos - 15) + "," + (player_y_pos + 7));
-				}
-				else if(player_x_speed == -1 ) {
-					mouth.setAttribute("points", player_x_pos + "," + player_y_pos + " " + (player_x_pos + 15) + "," + (player_y_pos - 7) + " " + (player_x_pos + 15) + "," + (player_y_pos + 7));
-				}
-			}
 			
-			if ((player_y_pos <= 15 && player_y_speed == 1) || (player_y_pos >= 385 && player_y_speed == -1)) {
-				player_y_pos = player_y_pos;
-				player_y_speed = 0;
-			}
-
-			<?php
-				for($block_nr = 0; $block_nr <= 14; $block_nr++) {
-					echo"
-						else if (player_y_speed == 1 && block_x_min[{$block_nr}] <= player_x_pos && block_x_max[{$block_nr}] >= player_x_pos && block_y_max[{$block_nr}] >= player_y_pos && block_y_min[{$block_nr}] <= player_y_pos) {
-							player_y_pos = player_y_pos + 2;
-							player_y_speed = 0;
-						}
-						else if (player_y_speed == -1 && block_x_min[{$block_nr}] <= player_x_pos && block_x_max[{$block_nr}] >= player_x_pos && block_y_max[{$block_nr}] >= player_y_pos && block_y_min[{$block_nr}] <= player_y_pos) {
-							player_y_pos = player_y_pos - 2;
-							player_y_speed = 0;
-						}
-					";
+			// If-statements to stop Pacman from going into walls and such when reaching a waypoint with a direction he is not allowed to have
+			if (player_travel_direction == "left") {
+				if ((player_x_pos == waypoint1_x_pos && player_y_pos == waypoint1_y_pos)<?php
+																							foreach ($waypoint_arrays as $key => $value) {
+																								$waypoint_nr = $key;
+																								foreach ($value as $key => $value) {
+																									if ($key == 0 && $value == 0 && $waypoint_nr !== 1) {
+																										echo " || (player_x_pos == waypoint{$waypoint_nr}_x_pos && player_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																									}
+																								}
+																							}
+																						?>) {
+					// Do nothing
 				}
-			?>
+				else {
+					player_x_pos = player_x_pos - player_x_speed;
+				}
+			}
+			else if (player_travel_direction == "up") {
+				if ((player_x_pos == waypoint1_x_pos && player_y_pos == waypoint1_y_pos)<?php
+																							foreach ($waypoint_arrays as $key => $value) {
+																								$waypoint_nr = $key;
+																								foreach ($value as $key => $value) {
+																									if ($key == 1 && $value == 0 && $waypoint_nr !== 1) {
+																										echo " || (player_x_pos == waypoint{$waypoint_nr}_x_pos && player_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																									}
+																								}
+																							}
+																						?>) {
+					// Do nothing
+				}
+				else {
+					player_y_pos = player_y_pos - player_y_speed;
+				}
+			}
+			else if (player_travel_direction == "right") {
+				if ((player_x_pos == waypoint3_x_pos && player_y_pos == waypoint3_y_pos)<?php
+																							foreach ($waypoint_arrays as $key => $value) {
+																								$waypoint_nr = $key;
+																								foreach ($value as $key => $value) {
+																									if ($key == 2 && $value == 0 && $waypoint_nr !== 3) {
+																										echo " || (player_x_pos == waypoint{$waypoint_nr}_x_pos && player_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																									}
+																								}
+																							}
+																						?>) {
+					// Do nothing
+				}
+				else {
+					player_x_pos = player_x_pos + player_x_speed;
+				}
+			}
+			else if (player_travel_direction == "down") {
+				if ((player_x_pos == waypoint4_x_pos && player_y_pos == waypoint4_y_pos)<?php
+																							foreach ($waypoint_arrays as $key => $value) {
+																								$waypoint_nr = $key;
+																								foreach ($value as $key => $value) {
+																									if ($key == 3 && $value == 0 && $waypoint_nr !== 4) {
+																										echo " || (player_x_pos == waypoint{$waypoint_nr}_x_pos && player_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																									}
+																								}
+																							}
+																						?>) {
+					// Do nothing
+				}
+				else {
+					player_y_pos = player_y_pos + player_y_speed;
+				}
+			}
+			// End of if-statements that stop Pacman from going into walls
 			
-			else {
-				player_y_pos = player_y_pos - player_y_speed;
-				
-				if(player_y_speed == 1) {
-					mouth.setAttribute("points", player_x_pos + "," + player_y_pos + " " + (player_x_pos + 7) + "," + (player_y_pos - 15) + " " + (player_x_pos - 7) + "," + (player_y_pos - 15));
-				}
-				else if(player_y_speed == -1) {
-					mouth.setAttribute("points", player_x_pos + "," + player_y_pos + " " + (player_x_pos + 7) + "," + (player_y_pos + 15) + " " + (player_x_pos -7) + "," + (player_y_pos + 15));
-				}
+			// Change the direction Pacman is looking when he turns around
+			if (player_travel_direction == "left") {
+				mouth.setAttribute("points", player_x_pos + "," + player_y_pos + " " + (player_x_pos - 15) + "," + (player_y_pos - 7) + " " + (player_x_pos - 15) + "," + (player_y_pos + 7));
 			}
+			else if (player_travel_direction == "up") {
+				mouth.setAttribute("points", player_x_pos + "," + player_y_pos + " " + (player_x_pos + 7) + "," + (player_y_pos - 15) + " " + (player_x_pos - 7) + "," + (player_y_pos - 15));
+			}
+			else if (player_travel_direction == "right") {
+				mouth.setAttribute("points", player_x_pos + "," + player_y_pos + " " + (player_x_pos + 15) + "," + (player_y_pos - 7) + " " + (player_x_pos + 15) + "," + (player_y_pos + 7));
+			}
+			else if (player_travel_direction == "down") {
+				mouth.setAttribute("points", player_x_pos + "," + player_y_pos + " " + (player_x_pos + 7) + "," + (player_y_pos + 15) + " " + (player_x_pos -7) + "," + (player_y_pos + 15));
+			}
+			// End of Pacman's direction
+			
 			player.setAttribute("cx", player_x_pos);
 			player.setAttribute("cy", player_y_pos);
 			
-			<?php
-				for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
-					echo "if (false) {\n";
-					echo "	ghost{$ghost_nr}_y_speed = 0;\n";
-					echo "	ghost{$ghost_nr}_x_speed = 0.5;\n";
-					echo "}\n";
-					echo "else if (true) {\n";
-					echo "	ghost{$ghost_nr}_y_speed = 0.5;\n";
-					echo "	ghost{$ghost_nr}_x_speed = 0;\n";
-					echo "}\n";
-					echo "else if (false) {\n";
-					echo "	ghost{$ghost_nr}_y_speed = 0;\n";
-					echo "	ghost{$ghost_nr}_x_speed = -0.5;\n";
-					echo "}\n";
-					echo "else if (false) {\n";
-					echo "	ghost{$ghost_nr}_y_speed = -0.5;\n";
-					echo "	ghost{$ghost_nr}_x_speed = 0;\n";
-					echo "}\n";
-				}
-			?>
-			<?php
-				for ($ghost_nr = 1; $ghost_nr < 4; $ghost_nr ++) {
-					echo "ghost{$ghost_nr}.setAttribute('cy', ghost{$ghost_nr}_y_pos - ghost{$ghost_nr}_y_speed);\n";
-					echo "document.getElementById('ghost{$ghost_nr}_bot').setAttribute('y', ghost{$ghost_nr}_y_pos - ghost{$ghost_nr}_y_speed);\n";
-					echo "document.getElementById('ghost{$ghost_nr}_eye1').setAttribute('cy', ghost{$ghost_nr}_y_pos - ghost{$ghost_nr}_y_speed);\n";
-					echo "document.getElementById('ghost{$ghost_nr}_eye2').setAttribute('cy', ghost{$ghost_nr}_y_pos - ghost{$ghost_nr}_y_speed);\n";
-					echo "\n";
-					echo "ghost{$ghost_nr}.setAttribute('cx', ghost{$ghost_nr}_x_pos - ghost{$ghost_nr}_x_speed);\n";
-					echo "document.getElementById('ghost{$ghost_nr}_bot').setAttribute('x', ghost{$ghost_nr}_x_pos - 12 - ghost{$ghost_nr}_x_speed);\n";
-					echo "document.getElementById('ghost{$ghost_nr}_eye1').setAttribute('cx', ghost{$ghost_nr}_x_pos - 5 - ghost{$ghost_nr}_x_speed);\n";
-					echo "document.getElementById('ghost{$ghost_nr}_eye2').setAttribute('cx', ghost{$ghost_nr}_x_pos + 5 - ghost{$ghost_nr}_x_speed);\n";
-				}
-			?>
 			
+			
+			
+			
+			
+			<?php
+				// Ghost-positions
+				for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+					echo "ghost{$ghost_nr}_x_min = parseFloat(ghost{$ghost_nr}.getAttribute('cx')) - 27;\n";
+					echo "ghost{$ghost_nr}_x_max = parseFloat(ghost{$ghost_nr}.getAttribute('cx')) + 27;\n";
+					echo "ghost{$ghost_nr}_y_min = parseFloat(ghost{$ghost_nr}.getAttribute('cy')) - 27;\n";
+					echo "ghost{$ghost_nr}_y_max = parseFloat(ghost{$ghost_nr}.getAttribute('cy')) + parseFloat(document.getElementById('ghost{$ghost_nr}_bot').getAttribute('height')) + 15;\n";
+				}
+				for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+					echo "ghost{$ghost_nr}_x_pos = parseFloat(ghost{$ghost_nr}.getAttribute('cx'));\n";
+					echo "ghost{$ghost_nr}_y_pos = parseFloat(ghost{$ghost_nr}.getAttribute('cy'));\n";
+				}
+				// End of Ghost-positions
+				
+				for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+					echo "if (false) {\n";
+					echo "	ghost{$ghost_nr}_travel_direction = 'left';\n";
+					echo "}\n";
+					echo "else if (false) {\n";
+					echo "	ghost{$ghost_nr}_travel_direction = 'up';\n";
+					echo "}\n";
+					echo "else if (false) {\n";
+					echo "	ghost{$ghost_nr}_travel_direction = 'right';\n";
+					echo "}\n";
+					echo "else if (false) {\n";
+					echo "	ghost{$ghost_nr}_travel_direction = 'down';\n";
+					echo "}\n";
+				}
+			
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+				echo "if (ghost{$ghost_nr}_x_pos == 200 && ghost{$ghost_nr}_y_pos == 260 && ghost{$ghost_nr}_exited_box == false) {\n";
+				echo "	if (Math.random() < 0.5) {\n";
+				echo "		ghost{$ghost_nr}_travel_direction = 'left';\n";
+				echo "	}\n";
+				echo "	else {\n";
+				echo "		ghost{$ghost_nr}_travel_direction = 'right';\n";
+				echo "	}\n";
+				echo "	ghost{$ghost_nr}_exited_box = true;\n";
+				echo "}\n";
+			}
+	
+			
+			
+			for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+				foreach ($waypoint_arrays as $key => $value) {
+					if ($key !== 0) {
+						echo "if (ghost{$ghost_nr}_x_pos == waypoint{$key}_x_pos && ghost{$ghost_nr}_y_pos == waypoint{$key}_y_pos) {\n";
+						echo "ghost{$ghost_nr}_at_waypoint();\n";
+						echo "}\n";
+					}
+				}
+			}
+			
+			
+				// Code moving the ghosts
+				for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+					echo "if (ghost{$ghost_nr}_travel_direction == 'left') {\n";
+						echo "	ghost{$ghost_nr}.setAttribute('cx', ghost{$ghost_nr}_x_pos - ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_bot').setAttribute('x', ghost{$ghost_nr}_x_pos - 12 - ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_eye1').setAttribute('cx', ghost{$ghost_nr}_x_pos - 5 - ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_eye2').setAttribute('cx', ghost{$ghost_nr}_x_pos + 5 - ghost_speed);\n";
+					echo "}\n";
+					echo "else if (ghost{$ghost_nr}_travel_direction == 'up') {\n";
+						echo "	ghost{$ghost_nr}.setAttribute('cy', ghost{$ghost_nr}_y_pos - ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_bot').setAttribute('y', ghost{$ghost_nr}_y_pos - ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_eye1').setAttribute('cy', ghost{$ghost_nr}_y_pos - ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_eye2').setAttribute('cy', ghost{$ghost_nr}_y_pos - ghost_speed);\n";
+					echo "}\n";
+					echo "else if (ghost{$ghost_nr}_travel_direction == 'right') {\n";
+					echo "ghost{$ghost_nr}.setAttribute('cx', ghost{$ghost_nr}_x_pos + ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_bot').setAttribute('x', ghost{$ghost_nr}_x_pos - 12 + ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_eye1').setAttribute('cx', ghost{$ghost_nr}_x_pos - 5 + ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_eye2').setAttribute('cx', ghost{$ghost_nr}_x_pos + 5 + ghost_speed);\n";
+					echo "}\n";
+					echo "else if (ghost{$ghost_nr}_travel_direction == 'down') {\n";
+						echo "	ghost{$ghost_nr}.setAttribute('cy', ghost{$ghost_nr}_y_pos + ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_bot').setAttribute('y', ghost{$ghost_nr}_y_pos + ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_eye1').setAttribute('cy', ghost{$ghost_nr}_y_pos + ghost_speed);\n";
+						echo "	document.getElementById('ghost{$ghost_nr}_eye2').setAttribute('cy', ghost{$ghost_nr}_y_pos + ghost_speed);\n";
+					echo "}\n";
+				}
+			?>
 			setTimeout(main, 10);
 			}
 		}
@@ -310,20 +554,16 @@
 			var e = event.keyCode;
 			
 			if (e==37 /* left */) {
-				player_x_speed = 1;
-				player_y_speed = 0;
+				current_key = "left";
 			}
 			else if (e==38 /* up */) {
-				player_y_speed = 1;
-				player_x_speed = 0;
+				current_key = "up";
 			}
 			else if (e==39 /* right */) {
-				player_x_speed = -1;
-				player_y_speed = 0;
+				current_key = "right";
 			}
 			else if (e==40 /* down */) {
-				player_y_speed = -1;
-				player_x_speed = 0;
+				current_key = "down";
 			}
 		}
 		function win() {
@@ -338,6 +578,68 @@
 				has_not_lost = false;
 			}
 		}
+		
+		<?php
+		for ($ghost_nr = 1; $ghost_nr < ($number_of_ghosts + 1); $ghost_nr ++) {
+			echo "function ghost{$ghost_nr}_at_waypoint() {\n";
+			echo "	ghost{$ghost_nr}_roll = Math.random();\n";
+
+			echo "	if (ghost{$ghost_nr}_roll <= 0.25 && ghost{$ghost_nr}_travel_direction !== 'right' && ((ghost{$ghost_nr}_x_pos == waypoint2_x_pos && ghost{$ghost_nr}_y_pos == waypoint2_y_pos)";
+																													foreach ($waypoint_arrays as $key => $value) {
+																														$waypoint_nr = $key;
+																														foreach ($value as $key => $value) {
+																															if ($key == 0 && $value == 1 && $waypoint_nr !== 2) {
+																																echo " || (ghost{$ghost_nr}_x_pos == waypoint{$waypoint_nr}_x_pos && ghost{$ghost_nr}_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																															}
+																														}
+																													}
+			echo																									  ")) {\n";
+			echo "		ghost{$ghost_nr}_travel_direction = 'left';\n";
+			echo "	}\n";
+			echo "	else if (ghost{$ghost_nr}_roll <= 0.5 && ghost{$ghost_nr}_roll > 0.25 && (ghost{$ghost_nr}_travel_direction !== 'down' || (ghost{$ghost_nr}_y_pos == waypoint24_y_pos) && (ghost{$ghost_nr}_x_pos == waypoint23_x_pos || ghost{$ghost_nr}_x_pos == waypoint24_x_pos)) && ((ghost{$ghost_nr}_x_pos == waypoint4_x_pos && ghost{$ghost_nr}_y_pos == waypoint4_y_pos)";
+																													foreach ($waypoint_arrays as $key => $value) {
+																														$waypoint_nr = $key;
+																														foreach ($value as $key => $value) {
+																															if ($key == 1 && $value == 1 && $waypoint_nr !== 4) {
+																																echo " || (ghost{$ghost_nr}_x_pos == waypoint{$waypoint_nr}_x_pos && ghost{$ghost_nr}_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																															}
+																														}
+																													}
+			echo																									  ")) {\n";
+			echo "		ghost{$ghost_nr}_travel_direction = 'up';\n";
+			echo "	}\n";
+			echo "	else if (ghost{$ghost_nr}_roll <= 0.75 && ghost{$ghost_nr}_roll > 0.5 && ghost{$ghost_nr}_travel_direction !== 'left' && ((ghost{$ghost_nr}_x_pos == waypoint1_x_pos && ghost{$ghost_nr}_y_pos == waypoint1_y_pos)";
+																													foreach ($waypoint_arrays as $key => $value) {
+																														$waypoint_nr = $key;
+																														foreach ($value as $key => $value) {
+																															if ($key == 2 && $value == 1 && $waypoint_nr !== 1) {
+																																echo " || (ghost{$ghost_nr}_x_pos == waypoint{$waypoint_nr}_x_pos && ghost{$ghost_nr}_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																															}
+																														}
+																													}
+			echo																									  ")) {\n";
+			echo "		ghost{$ghost_nr}_travel_direction = 'right';\n";
+			echo "	}\n";
+			echo "	else if (ghost{$ghost_nr}_roll <= 1 && ghost{$ghost_nr}_roll > 0.75 && ghost{$ghost_nr}_travel_direction !== 'up' && ((ghost{$ghost_nr}_x_pos == waypoint1_x_pos && ghost{$ghost_nr}_y_pos == waypoint1_y_pos)";
+																													foreach ($waypoint_arrays as $key => $value) {
+																														$waypoint_nr = $key;
+																														foreach ($value as $key => $value) {
+																															if ($key == 3 && $value == 1 && $waypoint_nr !== 1) {
+																																echo " || (ghost{$ghost_nr}_x_pos == waypoint{$waypoint_nr}_x_pos && ghost{$ghost_nr}_y_pos == waypoint{$waypoint_nr}_y_pos)";
+																															}
+																														}
+																													}
+			echo																									  ")) {\n";
+			echo "		ghost{$ghost_nr}_travel_direction = 'down';\n";	
+			echo "	}\n";
+			echo "	else {\n";
+			echo "		ghost{$ghost_nr}_at_waypoint();\n";
+				echo "}\n";
+			echo "}\n";
+		}
+		
+		?>
+		
 		
 		window.onload = main();
 	</script>
