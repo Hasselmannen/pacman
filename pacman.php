@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * A Pacman game in Scalable Vector Graphics.
  * 
