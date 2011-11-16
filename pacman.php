@@ -10,6 +10,8 @@ $number_of_ghosts = 7;
 
 // Moving using translate - good or bad?
 
+// Very small dumyy change to test online editing (Ace) in Github
+
 
 ?>
 <!DOCTYPE html>
