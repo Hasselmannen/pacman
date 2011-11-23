@@ -223,6 +223,9 @@ $number_of_ghosts = 7;
 		var game_screen = document.getElementById("game_screen");
 		var win_or_lose_text = document.getElementById("win_or_lose_text");
 		var get_positions = /\((\d{1,3}),(\d{1,3})\)/;
+		if ( console ) {
+			console.log(get_positions);
+		}
 		var regexp;
 		// End of misc variables
 		
@@ -352,6 +355,7 @@ $number_of_ghosts = 7;
 			);
 		?>
 		// End of waypoint arrays
+		var ta_bort_mig_sedan_debug_gjorts = 0;
 		
 		/* **************************
 			 START OF MAIN FUNCTION
@@ -374,6 +378,12 @@ $number_of_ghosts = 7;
 				// Check player-position
 				player_info = player.getAttribute("transform");
 				player_pos = player_info.match(get_positions);
+				if ( console ) {
+					if ( ta_bort_mig_sedan_debug_gjorts < 1 ) {
+						console.log(player_pos);
+						ta_bort_mig_sedan_debug_gjorts += 1;
+					}
+				}
 				player_pos[1] = parseFloat(player_pos[1]);
 				player_pos[2] = parseFloat(player_pos[2]);
 				// End of checking player-position
