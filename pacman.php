@@ -222,7 +222,7 @@ $number_of_ghosts = 7;
 		// Misc variables
 		var game_screen = document.getElementById("game_screen");
 		var win_or_lose_text = document.getElementById("win_or_lose_text");
-		var get_positions = /\((\d{1,3}),(\d{1,3})\)/;
+		var get_positions = /\((\d{1,3}),\s?(\d{1,3})\)/;
 		if ( console ) {
 			console.log(get_positions);
 		}
@@ -362,7 +362,7 @@ $number_of_ghosts = 7;
 		   ************************** */
 		function main(){
 			// UNDER MODIFICATION
-			score_text.innerHTML = "Number of ghosts eaten: " + score;
+			document.getElementById("score_text").innerHTML = "Number of ghosts eaten: " + score;
 			
 			if (total_balls_eaten == 61) {
 				win_or_lose_text.innerHTML = "You won";
@@ -380,6 +380,7 @@ $number_of_ghosts = 7;
 				player_pos = player_info.match(get_positions);
 				if ( console ) {
 					if ( ta_bort_mig_sedan_debug_gjorts < 1 ) {
+						console.log(player_info);
 						console.log(player_pos);
 						ta_bort_mig_sedan_debug_gjorts += 1;
 					}
