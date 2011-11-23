@@ -535,7 +535,8 @@ $number_of_ghosts = 7;
 						opening_mouth = true;
 					}
 				}
-				mouth.setAttribute("points", ("0,0 -16,-" + (mouth_width / 2) +  " -16," + (mouth_width / 2)));
+				// Added Math.abs() since sometimes we get two minus signs 0, 0, -16, --0.75, ...
+				mouth.setAttribute("points", ("0,0 -16,-" + Math.abs(mouth_width / 2) +  " -16," + (mouth_width / 2)));
 				// End of animated mouth
 				
 				
