@@ -5,13 +5,12 @@
  * @author Johan Hasselqvist and Lars Gunther.
  */
 
-$number_of_ghosts = 7;
-// Gunther asks - even more ghosts?
-
-// Moving using translate - good or bad?
-
-// Very small dumyy change to test online editing (Ace) in Github
-
+if ( isset($_GET['ghosts']) ) {
+		$number_of_ghosts = (int)$_GET['ghosts'];
+	}
+	else {
+		$number_of_ghosts = 6;
+	}
 
 ?>
 <!DOCTYPE html>
@@ -113,7 +112,7 @@ $number_of_ghosts = 7;
 		
 		<!-- Start of the player -->
 		<g id="player" transform="translate(220,100) rotate(0)">
-			<circle id="pacman" cx="0" cy="0" r="15" />
+			<circle cx="0" cy="0" r="15" />
 			<polygon id="mouth" points="0,0 -16,-7 -16,7" />
 		</g>
 		<!-- End of player -->
@@ -162,7 +161,6 @@ $number_of_ghosts = 7;
 		<p id="score_text"></p>
 	
 	<script>
-		// UNDER MODIFICATION
 		// The balls that make the ghosts edible
 		document.getElementById("ball_20_20").setAttribute("r", 7);
 		document.getElementById("ball_20_380").setAttribute("r", 7);
@@ -172,7 +170,6 @@ $number_of_ghosts = 7;
 	
 		// Player variables
 		var player = document.getElementById("player");
-		var pacman = document.getElementById("pacman");
 		var mouth = document.getElementById("mouth");
 		var player_info;
 		var player_pos;
@@ -183,8 +180,6 @@ $number_of_ghosts = 7;
 		var mouth_width = 0;
 		var eaten_by_ghosts = false;
 		var total_balls_eaten = 0;
-		
-		// UNDER MODIFICATION
 		var score = 0;
 		// End of player variables
 		
@@ -196,8 +191,6 @@ $number_of_ghosts = 7;
 		var ghosts_travel_dir = new Array();
 		var ghosts_choose_dir = new Array();
 		var ghost_speed = 2;
-		
-		//UNDER MODIFICATION
 		var ghosts_colors = new Array();
 		var edible_ghosts = new Array();
 		var edible_ghosts_timers = new Array();
@@ -205,13 +198,11 @@ $number_of_ghosts = 7;
 
 		for (ghost_nr = 1; ghost_nr <= <?php echo $number_of_ghosts; ?>; ghost_nr++) {
 			ghosts[ghost_nr] = document.getElementById("ghost" + ghost_nr);
-			// UNDER MODIFICATION
 			ghosts_colors[ghost_nr] = 'purple';
 			edible_ghosts[ghost_nr] = false;
 			edible_ghosts_timers[ghost_nr] = 0;
 		}
 		
-		// UNDER MODIFICATION
 		ghosts_colors[1] = 'red';
 		ghosts_colors[2] = 'cyan';
 		ghosts_colors[3] = 'green';
@@ -222,11 +213,7 @@ $number_of_ghosts = 7;
 		// Misc variables
 		var game_screen = document.getElementById("game_screen");
 		var win_or_lose_text = document.getElementById("win_or_lose_text");
-		var get_positions = /\((\d{1,3}),\s?(\d{1,3})\)/;
-		if ( console ) {
-			console.log(get_positions);
-		}
-		var regexp;
+		var regexp = /\((\d{1,3}),?\s?(\d{1,3})\)/;
 		// End of misc variables
 		
 		// Waypoint arrays
@@ -355,13 +342,11 @@ $number_of_ghosts = 7;
 			);
 		?>
 		// End of waypoint arrays
-		var ta_bort_mig_sedan_debug_gjorts = 0;
 		
 		/* **************************
 			 START OF MAIN FUNCTION
 		   ************************** */
-		function main(){
-			// UNDER MODIFICATION
+		function main() {
 			document.getElementById("score_text").innerHTML = "Number of ghosts eaten: " + score;
 			
 			if (total_balls_eaten == 61) {
@@ -377,14 +362,7 @@ $number_of_ghosts = 7;
 				   
 				// Check player-position
 				player_info = player.getAttribute("transform");
-				player_pos = player_info.match(get_positions);
-				if ( console ) {
-					if ( ta_bort_mig_sedan_debug_gjorts < 1 ) {
-						console.log(player_info);
-						console.log(player_pos);
-						ta_bort_mig_sedan_debug_gjorts += 1;
-					}
-				}
+				player_pos = player_info.match(regexp);
 				player_pos[1] = parseFloat(player_pos[1]);
 				player_pos[2] = parseFloat(player_pos[2]);
 				// End of checking player-position
@@ -535,8 +513,7 @@ $number_of_ghosts = 7;
 						opening_mouth = true;
 					}
 				}
-				// Added Math.abs() since sometimes we get two minus signs 0, 0, -16, --0.75, ...
-				mouth.setAttribute("points", ("0,0 -16,-" + Math.abs(mouth_width / 2) +  " -16," + (mouth_width / 2)));
+				mouth.setAttribute("points", ("0,0 -16," + (-mouth_width / 2) +  " -16," + (mouth_width / 2)));
 				// End of animated mouth
 				
 				
@@ -561,7 +538,6 @@ $number_of_ghosts = 7;
 						var ball_to_eat = document.getElementById("ball_20_" + y);
 						ball_to_eat.parentNode.removeChild(ball_to_eat);
 						total_balls_eaten ++;
-						// UNDER MODIFICATION
 						if (ball_to_eat.getAttribute("r") > 5) {
 							for (ghost_nr = 1; ghost_nr <= <?php echo $number_of_ghosts; ?>; ghost_nr++) {
 								edible_ghosts[ghost_nr] = true;
@@ -584,7 +560,6 @@ $number_of_ghosts = 7;
 				
 				for (ghost_nr = 1; ghost_nr <= <?php echo $number_of_ghosts; ?>; ghost_nr++) {
 				
-					// UNDER MODIFICATION
 					// Code to make the ghosts edible when pacman is powered up
 					if (edible_ghosts[ghost_nr] == true) {
 						ghosts[ghost_nr].style.fill = 'blue';
@@ -615,7 +590,7 @@ $number_of_ghosts = 7;
 				
 					// Check ghost-positions
 					ghosts_info[ghost_nr] = ghosts[ghost_nr].getAttribute("transform");
-					ghosts_pos[ghost_nr] = ghosts_info[ghost_nr].match(get_positions);
+					ghosts_pos[ghost_nr] = ghosts_info[ghost_nr].match(regexp);
 					ghosts_pos[ghost_nr][1] = parseFloat(ghosts_pos[ghost_nr][1]);
 					ghosts_pos[ghost_nr][2] = parseFloat(ghosts_pos[ghost_nr][2]);
 					// End of checking ghost-positions
@@ -657,7 +632,6 @@ $number_of_ghosts = 7;
 					
 					// Check if Pacman collides with a ghost
 					if (ghosts_pos[ghost_nr][1] < (player_pos[1] + 10) && ghosts_pos[ghost_nr][1] > (player_pos[1] - 10) && ghosts_pos[ghost_nr][2] < (player_pos[2] + 10) && ghosts_pos[ghost_nr][2] > (player_pos[2] - 10)) {
-						// UNDER MODIFICATION
 						if (edible_ghosts[ghost_nr] == true) {
 							ghosts_pos[ghost_nr][1] = 200;
 							ghosts_pos[ghost_nr][2] = 200;
