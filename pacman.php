@@ -538,7 +538,7 @@ if ( isset($_GET['ghosts']) ) {
 			if (waypoint_arrays[x][y][0] == 1 && ghosts_travel_dirs[ghost_nr] !== "right") {
 				number_of_choices++;
 			}
-			if (waypoint_arrays[x][y][1] == 1 && ghosts_travel_dirs[ghost_nr] !== "down") {
+			if (waypoint_arrays[x][y][1] == 1 && (ghosts_travel_dirs[ghost_nr] !== "down" || ghosts_pos[ghost_nr][2] == 380)) {
 				number_of_choices++;
 			}
 			if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] !== "left") {
@@ -552,7 +552,7 @@ if ( isset($_GET['ghosts']) ) {
 					if (waypoint_arrays[x][y][0] == 1 && ghosts_travel_dirs[ghost_nr] !== "right") {
 						choices[i] = "left";
 					}
-					else if (waypoint_arrays[x][y][1] == 1 && ghosts_travel_dirs[ghost_nr] !== "down") {
+					else if (waypoint_arrays[x][y][1] == 1 && (ghosts_travel_dirs[ghost_nr] !== "down" || ghosts_pos[ghost_nr][2] == 380)) {
 						choices[i] = "up";
 					}
 					else if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] !== "left") {
