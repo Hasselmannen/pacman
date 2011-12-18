@@ -11,7 +11,6 @@ if (isset($_GET['ghosts'])) {
     else {
         $number_of_ghosts = 6;
     }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,6 +68,16 @@ if (isset($_GET['ghosts'])) {
             width: 559px;
             font-size: 100px;
             text-align: center;
+        }
+        #score_text {
+            color: white;
+            position: absolute;
+            top: 503px;
+            width: 559px;
+            text-align: center;
+            font-family: sans-serif;
+            font-weight: 700;
+            font-size: 22px;
         }
         .ball {
             fill: white;
@@ -251,7 +260,7 @@ if (isset($_GET['ghosts'])) {
              START OF MAIN FUNCTION
            ************************** */
         function main() {
-            document.getElementById("score_text").innerHTML = "Number of ghosts eaten: " + score;
+            document.getElementById("score_text").innerHTML = "Score: " + parseInt(score);
             
             if (total_balls_eaten == 61) {
                 win_or_lose_text.innerHTML = "You won";
@@ -288,7 +297,7 @@ if (isset($_GET['ghosts'])) {
                 
                 // Start of if-statements that checks when pacman is at a waypoint, and then changes dir depending on which key was pressed
                 if ((player_pos[1] + 20) % 40 == 0 && (player_pos[2] + 20) % 40 == 0) {
-                    if (typeof(waypoint_arrays[player_pos[1]][player_pos[2]]) !== "undefined") {
+                    if (typeof(waypoint_arrays[player_pos[1]][player_pos[2]]) != "undefined") {
                         if (current_key == "left" && waypoint_arrays[player_pos[1]][player_pos[2]][0] == 1) {
                             player_travel_dir = "left";
                         }
@@ -429,7 +438,7 @@ if (isset($_GET['ghosts'])) {
                     if (ghosts_exited_box[ghost_nr] == true) {
                         // TODO: Combine this with the function that makes ghosts choose direction at waypoints, instead of having very similar code at multiple places
                         if ((ghosts_pos[ghost_nr][1] + 20) % 40 == 0 && (ghosts_pos[ghost_nr][2] + 20) % 40 == 0) {
-                            if (typeof(waypoint_arrays[ghosts_pos[ghost_nr][1]][ghosts_pos[ghost_nr][2]]) !== "undefined") {
+                            if (typeof(waypoint_arrays[ghosts_pos[ghost_nr][1]][ghosts_pos[ghost_nr][2]]) != "undefined") {
                                 ghosts_at_waypoint(ghost_nr, ghosts_pos[ghost_nr][1], ghosts_pos[ghost_nr][2]);
                             }
                         }
@@ -465,7 +474,7 @@ if (isset($_GET['ghosts'])) {
                             ghosts[ghost_nr].style.fill = ghosts_colors[ghost_nr];
                             edible_ghosts[ghost_nr] = false;
                             edible_ghosts_timers[ghost_nr] = 0;
-                            score ++;
+                            score += 100;
                         }
                         else {
                             eaten_by_ghosts = true;
@@ -493,7 +502,9 @@ if (isset($_GET['ghosts'])) {
                 /* **************************
                          END OF GHOSTS
                    ************************** */
-
+                
+                score -= 0.1;
+                
                 setTimeout(main, 20);
             }
         }
@@ -530,41 +541,41 @@ if (isset($_GET['ghosts'])) {
             var number_of_choices = 0;
             ghosts_choose_dirs[ghost_nr] = Math.random();
             
-            if (waypoint_arrays[x][y][0] == 1 && ghosts_travel_dirs[ghost_nr] !== "right") {
+            if (waypoint_arrays[x][y][0] == 1 && ghosts_travel_dirs[ghost_nr] != "right") {
                 number_of_choices++;
             }
-            if (waypoint_arrays[x][y][1] == 1 && (ghosts_travel_dirs[ghost_nr] !== "down" || ghosts_pos[ghost_nr][2] == 380)) {
+            if (waypoint_arrays[x][y][1] == 1 && (ghosts_travel_dirs[ghost_nr] != "down" || ghosts_pos[ghost_nr][2] == 380)) {
                 number_of_choices++;
             }
-            if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] !== "left") {
+            if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] != "left") {
                 number_of_choices++;
             }
-            if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] !== "up") {
+            if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] != "up") {
                 number_of_choices++;
             }
             for (i = 0; i < number_of_choices; i++) {
                 if (i == 0) {
-                    if (waypoint_arrays[x][y][0] == 1 && ghosts_travel_dirs[ghost_nr] !== "right") {
+                    if (waypoint_arrays[x][y][0] == 1 && ghosts_travel_dirs[ghost_nr] != "right") {
                         choices[i] = "left";
                     }
-                    else if (waypoint_arrays[x][y][1] == 1 && (ghosts_travel_dirs[ghost_nr] !== "down" || ghosts_pos[ghost_nr][2] == 380)) {
+                    else if (waypoint_arrays[x][y][1] == 1 && (ghosts_travel_dirs[ghost_nr] != "down" || ghosts_pos[ghost_nr][2] == 380)) {
                         choices[i] = "up";
                     }
-                    else if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] !== "left") {
+                    else if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] != "left") {
                         choices[i] = "right";
                     }
-                    else if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] !== "up") {
+                    else if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] != "up") {
                         choices[i] = "down";
                     }
                 }
                 else if (i == 1) {
-                    if (waypoint_arrays[x][y][1] == 1 && ghosts_travel_dirs[ghost_nr] !== "down") {
+                    if (waypoint_arrays[x][y][1] == 1 && ghosts_travel_dirs[ghost_nr] != "down") {
                         choices[i] = "up";
                     }
-                    else if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] !== "left") {
+                    else if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] != "left") {
                         choices[i] = "right";
                     }
-                    else if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] !== "up") {
+                    else if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] != "up") {
                         choices[i] = "down";
                     }
                 }
