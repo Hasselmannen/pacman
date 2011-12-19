@@ -85,6 +85,15 @@ if (isset($_GET['ghosts'])) {
         .ghosts {
             fill: purple;
         }
+        #cherry > circle {
+            fill: #F03;
+            stroke: black;
+            stroke-width: 1;
+        }
+        #cherry > path {
+            stroke: green;
+            stroke-width: 2;
+        }
     </style>
 </head>
 <body>
@@ -118,6 +127,14 @@ if (isset($_GET['ghosts'])) {
             }
         ?>
         <!-- End of generating white balls -->
+        
+        <!-- Start of cherry -->
+        <g id="cherry" transform="translate(220,100)">
+            <path d="M 5 0 C 0 -13 -13 -11 -13 -13 C -2 -4 -6 -8 0 3" />
+            <circle cx="5" cy="0" r="6" />
+            <circle cx="0" cy="3" r="6" />
+        </g>
+        <!-- End of cherry -->
         
         <!-- Start of the player -->
         <g id="player" transform="translate(220,100) rotate(0)">
@@ -193,19 +210,19 @@ if (isset($_GET['ghosts'])) {
         // End of player variables
 
         // Ghost variables
-        var ghosts = new Array();
-        var ghosts_info = new Array();
-        var ghosts_pos = new Array();
-        var ghosts_exited_box = new Array();
-        var ghosts_travel_dirs = new Array();
-        var ghosts_choose_dirs = new Array();
+        var ghosts = [];
+        var ghosts_info = [];
+        var ghosts_pos = [];
+        var ghosts_exited_box = [];
+        var ghosts_travel_dirs = [];
+        var ghosts_choose_dirs = [];
         var ghost_speed = 2;
-        var ghosts_colors = new Array();
-        var edible_ghosts = new Array();
-        var edible_ghosts_timers = new Array();
+        var ghosts_colors = [];
+        var edible_ghosts = [];
+        var edible_ghosts_timers = [];
         var edible_ghosts_length = 500;
 
-        for (ghost_nr = 1; ghost_nr <= <?php echo $number_of_ghosts; ?>; ghost_nr++) {
+        for (var ghost_nr = 1; ghost_nr <= <?php echo $number_of_ghosts; ?>; ghost_nr++) {
             ghosts[ghost_nr] = document.getElementById("ghost" + ghost_nr);
             ghosts_colors[ghost_nr] = 'purple';
             edible_ghosts[ghost_nr] = false;
@@ -223,12 +240,14 @@ if (isset($_GET['ghosts'])) {
         var game_screen = document.getElementById("game_screen");
         var win_or_lose_text = document.getElementById("win_or_lose_text");
         var regexp = /\((\d{1,3}),?\s?(\d{1,3})\)/;
+        var time_taken = 0;
+        var ball_to_eat;
         // End of misc variables
         
         // Waypoint arrays
-        var waypoint_arrays = new Array();
-        for (i = 20; i <= 380; i += 40) {
-            waypoint_arrays[i] = new Array();
+        var waypoint_arrays = [];
+        for (var i = 20; i <= 380; i += 40) {
+            waypoint_arrays[i] = [];
         }
         waypoint_arrays[20][20]   = [0, 0, 1, 1];
         waypoint_arrays[220][20]  = [1, 0, 1, 1];
@@ -260,12 +279,12 @@ if (isset($_GET['ghosts'])) {
              START OF MAIN FUNCTION
            ************************** */
         function main() {
-            document.getElementById("score_text").innerHTML = "Score: " + parseInt(score);
+            document.getElementById("score_text").innerHTML = "Score: " + parseInt((score - time_taken/10), 10);
             
-            if (total_balls_eaten == 61) {
+            if (total_balls_eaten === 61) {
                 win_or_lose_text.innerHTML = "You won";
             }
-            else if (eaten_by_ghosts == true) {
+            else if (eaten_by_ghosts === true) {
                 win_or_lose_text.innerHTML = "Game over";
             }
             else {
@@ -281,33 +300,33 @@ if (isset($_GET['ghosts'])) {
                 // End of checking player-position
                 
                 // Code so that Pacman can instantly turn around
-                if (current_key == "left" && player_travel_dir == "right") {
+                if (current_key === "left" && player_travel_dir === "right") {
                     player_travel_dir = "left";
                 }
-                else if (current_key == "up" && player_travel_dir == "down") {
+                else if (current_key === "up" && player_travel_dir === "down") {
                     player_travel_dir = "up";
                 }
-                else if (current_key == "right" && player_travel_dir == "left") {
+                else if (current_key === "right" && player_travel_dir === "left") {
                     player_travel_dir = "right";
                 }
-                else if (current_key == "down" && player_travel_dir == "up") {
+                else if (current_key === "down" && player_travel_dir === "up") {
                     player_travel_dir = "down";
                 }
                 // End of code so that pacman can turn around
                 
                 // Start of if-statements that checks when pacman is at a waypoint, and then changes dir depending on which key was pressed
-                if ((player_pos[1] + 20) % 40 == 0 && (player_pos[2] + 20) % 40 == 0) {
-                    if (typeof(waypoint_arrays[player_pos[1]][player_pos[2]]) != "undefined") {
-                        if (current_key == "left" && waypoint_arrays[player_pos[1]][player_pos[2]][0] == 1) {
+                if ((player_pos[1] + 20) % 40 === 0 && (player_pos[2] + 20) % 40 === 0) {
+                    if (typeof(waypoint_arrays[player_pos[1]][player_pos[2]]) !== "undefined") {
+                        if (current_key === "left" && waypoint_arrays[player_pos[1]][player_pos[2]][0] === 1) {
                             player_travel_dir = "left";
                         }
-                        else if (current_key == "up" && waypoint_arrays[player_pos[1]][player_pos[2]][1] == 1) {
+                        else if (current_key === "up" && waypoint_arrays[player_pos[1]][player_pos[2]][1] === 1) {
                             player_travel_dir = "up";
                         }
-                        else if (current_key == "right" && waypoint_arrays[player_pos[1]][player_pos[2]][2] == 1) {
+                        else if (current_key === "right" && waypoint_arrays[player_pos[1]][player_pos[2]][2] === 1) {
                             player_travel_dir = "right";
                         }
-                        else if (current_key == "down" && waypoint_arrays[player_pos[1]][player_pos[2]][3] == 1) {
+                        else if (current_key === "down" && waypoint_arrays[player_pos[1]][player_pos[2]][3] === 1) {
                             player_travel_dir = "down";
                         }
                     }
@@ -315,36 +334,36 @@ if (isset($_GET['ghosts'])) {
                 // End of if-statements for turning
 
                 // If-statements to move Pacman if he is allowed to travel that way
-                if (typeof(waypoint_arrays[player_pos[1]]) == "undefined" || typeof(waypoint_arrays[player_pos[1]][player_pos[2]]) == "undefined") {
-                    if (player_travel_dir == "left") {
+                if (typeof(waypoint_arrays[player_pos[1]]) === "undefined" || typeof(waypoint_arrays[player_pos[1]][player_pos[2]]) === "undefined") {
+                    if (player_travel_dir === "left") {
                         player.setAttribute("transform", "translate(" + (player_pos[1] - player_speed) + "," + (player_pos[2]) + ") rotate(0)");
                     }
-                    else if (player_travel_dir == "up") {
+                    else if (player_travel_dir === "up") {
                         player.setAttribute("transform", "translate(" + (player_pos[1]) + "," + (player_pos[2] - player_speed) + ") rotate(90)");
                     }
-                    else if (player_travel_dir == "right") {
+                    else if (player_travel_dir === "right") {
                         player.setAttribute("transform", "translate(" + (player_pos[1] + player_speed) + "," + (player_pos[2]) + ") rotate(180)");
                     }
-                    else if (player_travel_dir == "down") {
+                    else if (player_travel_dir === "down") {
                         player.setAttribute("transform", "translate(" + (player_pos[1]) + "," + (player_pos[2] + player_speed) + ") rotate(270)");
                     }
                 }
-                else if (player_travel_dir == "left" && waypoint_arrays[player_pos[1]][player_pos[2]][0] == 1) {
+                else if (player_travel_dir === "left" && waypoint_arrays[player_pos[1]][player_pos[2]][0] === 1) {
                     player.setAttribute("transform", "translate(" + (player_pos[1] - player_speed) + "," + (player_pos[2]) + ") rotate(0)");
                 }
-                else if (player_travel_dir == "up" && waypoint_arrays[player_pos[1]][player_pos[2]][1] == 1) {
+                else if (player_travel_dir === "up" && waypoint_arrays[player_pos[1]][player_pos[2]][1] === 1) {
                     player.setAttribute("transform", "translate(" + (player_pos[1]) + "," + (player_pos[2] - player_speed) + ") rotate(90)");
                 }
-                else if (player_travel_dir == "right" && waypoint_arrays[player_pos[1]][player_pos[2]][2] == 1) {
+                else if (player_travel_dir === "right" && waypoint_arrays[player_pos[1]][player_pos[2]][2] === 1) {
                     player.setAttribute("transform", "translate(" + (player_pos[1] + player_speed) + "," + (player_pos[2]) + ") rotate(180)");
                 }
-                else if (player_travel_dir == "down" && waypoint_arrays[player_pos[1]][player_pos[2]][3] == 1) {
+                else if (player_travel_dir === "down" && waypoint_arrays[player_pos[1]][player_pos[2]][3] === 1) {
                     player.setAttribute("transform", "translate(" + (player_pos[1]) + "," + (player_pos[2] + player_speed) + ") rotate(270)");
                 }
                 // End of if-statements that moves Pacman when he is allowed to
                 
                 // Animated mouth
-                if(opening_mouth == true) {
+                if (opening_mouth === true) {
                     mouth_width += 1.5;
                     if(mouth_width >= 20) {
                         opening_mouth = false;
@@ -360,10 +379,10 @@ if (isset($_GET['ghosts'])) {
                 // End of animated mouth
                 
                 // Code to eat the balls, if it is a "special" ball, make the ghosts edible
-                for (y = 20; y <= 400; y = y + 40) {
-                    for (x = 60; x <= 400; x = x + 40) {
-                        if (player_pos[1] <= x + 10 && player_pos[1] >= x - 10 && player_pos[2] <= y + 10 && player_pos[2] >= y - 10 && document.getElementById("ball_" + x + "_" + y) != null ) {
-                            var ball_to_eat = document.getElementById("ball_" + x + "_" + y);
+                for (var y = 20; y <= 400; y = y + 40) {
+                    for (var x = 60; x <= 400; x = x + 40) {
+                        if (player_pos[1] <= x + 10 && player_pos[1] >= x - 10 && player_pos[2] <= y + 10 && player_pos[2] >= y - 10 && document.getElementById("ball_" + x + "_" + y) !== null ) {
+                            ball_to_eat = document.getElementById("ball_" + x + "_" + y);
                             ball_to_eat.parentNode.removeChild(ball_to_eat);
                             total_balls_eaten ++;
                             if (ball_to_eat.getAttribute("r") > 5) {
@@ -374,8 +393,8 @@ if (isset($_GET['ghosts'])) {
                             }
                         }
                     }
-                    if (player_pos[1] <= 30 && player_pos[1] >= 10 && player_pos[2] <= y + 10 && player_pos[2] >= y - 10 && document.getElementById("ball_20_" + y) != null ) {
-                        var ball_to_eat = document.getElementById("ball_20_" + y);
+                    if (player_pos[1] <= 30 && player_pos[1] >= 10 && player_pos[2] <= y + 10 && player_pos[2] >= y - 10 && document.getElementById("ball_20_" + y) !== null ) {
+                        ball_to_eat = document.getElementById("ball_20_" + y);
                         ball_to_eat.parentNode.removeChild(ball_to_eat);
                         total_balls_eaten ++;
                         if (ball_to_eat.getAttribute("r") > 5) {
@@ -401,7 +420,7 @@ if (isset($_GET['ghosts'])) {
                 for (ghost_nr = 1; ghost_nr <= <?php echo $number_of_ghosts; ?>; ghost_nr++) {
                 
                     // Code to make the ghosts edible when pacman is powered up
-                    if (edible_ghosts[ghost_nr] == true) {
+                    if (edible_ghosts[ghost_nr] === true) {
                         ghosts[ghost_nr].style.fill = 'blue';
                         if (edible_ghosts_timers[ghost_nr] > edible_ghosts_length - 10) {
                             ghosts[ghost_nr].style.fill = '#AAF';
@@ -435,16 +454,16 @@ if (isset($_GET['ghosts'])) {
                     // End of checking ghost-positions
                     
                     // Code to make the ghosts first get out of the box and then turn at waypoints
-                    if (ghosts_exited_box[ghost_nr] == true) {
+                    if (ghosts_exited_box[ghost_nr] === true) {
                         // TODO: Combine this with the function that makes ghosts choose direction at waypoints, instead of having very similar code at multiple places
-                        if ((ghosts_pos[ghost_nr][1] + 20) % 40 == 0 && (ghosts_pos[ghost_nr][2] + 20) % 40 == 0) {
-                            if (typeof(waypoint_arrays[ghosts_pos[ghost_nr][1]][ghosts_pos[ghost_nr][2]]) != "undefined") {
+                        if ((ghosts_pos[ghost_nr][1] + 20) % 40 === 0 && (ghosts_pos[ghost_nr][2] + 20) % 40 === 0) {
+                            if (typeof(waypoint_arrays[ghosts_pos[ghost_nr][1]][ghosts_pos[ghost_nr][2]]) !== "undefined") {
                                 ghosts_at_waypoint(ghost_nr, ghosts_pos[ghost_nr][1], ghosts_pos[ghost_nr][2]);
                             }
                         }
                     }
                     else {
-                        if (ghosts_pos[ghost_nr][2] == 260) {
+                        if (ghosts_pos[ghost_nr][2] === 260) {
                             if (Math.random() > 0.5) {
                                 ghosts_travel_dirs[ghost_nr] = "right";
                             }
@@ -467,7 +486,7 @@ if (isset($_GET['ghosts'])) {
 
                     // Check if Pacman collides with a ghost
                     if (ghosts_pos[ghost_nr][1] < (player_pos[1] + 10) && ghosts_pos[ghost_nr][1] > (player_pos[1] - 10) && ghosts_pos[ghost_nr][2] < (player_pos[2] + 10) && ghosts_pos[ghost_nr][2] > (player_pos[2] - 10)) {
-                        if (edible_ghosts[ghost_nr] == true) {
+                        if (edible_ghosts[ghost_nr] === true) {
                             ghosts_pos[ghost_nr][1] = 200;
                             ghosts_pos[ghost_nr][2] = 200;
                             ghosts_exited_box[ghost_nr] = false;
@@ -483,13 +502,13 @@ if (isset($_GET['ghosts'])) {
                     // End of pacman-ghost collision
 
                     // Ghosts' movement
-                    if (ghosts_travel_dirs[ghost_nr] == "left") {
+                    if (ghosts_travel_dirs[ghost_nr] === "left") {
                         ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1] - ghost_speed) + "," + (ghosts_pos[ghost_nr][2]) + ")");
                     }
-                    else if (ghosts_travel_dirs[ghost_nr] == "up") {
+                    else if (ghosts_travel_dirs[ghost_nr] === "up") {
                         ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1]) + "," + (ghosts_pos[ghost_nr][2] - ghost_speed) + ")");
                     }
-                    else if (ghosts_travel_dirs[ghost_nr] == "right") {
+                    else if (ghosts_travel_dirs[ghost_nr] === "right") {
                         ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1] + ghost_speed) + "," + (ghosts_pos[ghost_nr][2]) + ")");
                     }
                     else {
@@ -503,7 +522,10 @@ if (isset($_GET['ghosts'])) {
                          END OF GHOSTS
                    ************************** */
                 
-                score -= 0.1;
+                if (time_taken >= 500) {
+                    // TODO: Cherry becomes visible/edible
+                }
+                time_taken++;
                 
                 setTimeout(main, 20);
             }
@@ -537,45 +559,45 @@ if (isset($_GET['ghosts'])) {
         
         // Function to make the ghosts choose direction when at a waypoint
         function ghosts_at_waypoint(ghost_nr, x, y) {
-            var choices = new Array();
+            var choices = [];
             var number_of_choices = 0;
             ghosts_choose_dirs[ghost_nr] = Math.random();
             
-            if (waypoint_arrays[x][y][0] == 1 && ghosts_travel_dirs[ghost_nr] != "right") {
+            if (waypoint_arrays[x][y][0] === 1 && ghosts_travel_dirs[ghost_nr] !== "right") {
                 number_of_choices++;
             }
-            if (waypoint_arrays[x][y][1] == 1 && (ghosts_travel_dirs[ghost_nr] != "down" || ghosts_pos[ghost_nr][2] == 380)) {
+            if (waypoint_arrays[x][y][1] === 1 && (ghosts_travel_dirs[ghost_nr] !== "down" || ghosts_pos[ghost_nr][2] === 380)) {
                 number_of_choices++;
             }
-            if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] != "left") {
+            if (waypoint_arrays[x][y][2] === 1 && ghosts_travel_dirs[ghost_nr] !== "left") {
                 number_of_choices++;
             }
-            if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] != "up") {
+            if (waypoint_arrays[x][y][3] === 1 && ghosts_travel_dirs[ghost_nr] !== "up") {
                 number_of_choices++;
             }
             for (i = 0; i < number_of_choices; i++) {
-                if (i == 0) {
-                    if (waypoint_arrays[x][y][0] == 1 && ghosts_travel_dirs[ghost_nr] != "right") {
+                if (i === 0) {
+                    if (waypoint_arrays[x][y][0] === 1 && ghosts_travel_dirs[ghost_nr] !== "right") {
                         choices[i] = "left";
                     }
-                    else if (waypoint_arrays[x][y][1] == 1 && (ghosts_travel_dirs[ghost_nr] != "down" || ghosts_pos[ghost_nr][2] == 380)) {
+                    else if (waypoint_arrays[x][y][1] === 1 && (ghosts_travel_dirs[ghost_nr] !== "down" || ghosts_pos[ghost_nr][2] === 380)) {
                         choices[i] = "up";
                     }
-                    else if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] != "left") {
+                    else if (waypoint_arrays[x][y][2] === 1 && ghosts_travel_dirs[ghost_nr] !== "left") {
                         choices[i] = "right";
                     }
-                    else if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] != "up") {
+                    else if (waypoint_arrays[x][y][3] === 1 && ghosts_travel_dirs[ghost_nr] !== "up") {
                         choices[i] = "down";
                     }
                 }
-                else if (i == 1) {
-                    if (waypoint_arrays[x][y][1] == 1 && ghosts_travel_dirs[ghost_nr] != "down") {
+                else if (i === 1) {
+                    if (waypoint_arrays[x][y][1] === 1 && ghosts_travel_dirs[ghost_nr] !== "down") {
                         choices[i] = "up";
                     }
-                    else if (waypoint_arrays[x][y][2] == 1 && ghosts_travel_dirs[ghost_nr] != "left") {
+                    else if (waypoint_arrays[x][y][2] === 1 && ghosts_travel_dirs[ghost_nr] !== "left") {
                         choices[i] = "right";
                     }
-                    else if (waypoint_arrays[x][y][3] == 1 && ghosts_travel_dirs[ghost_nr] != "up") {
+                    else if (waypoint_arrays[x][y][3] === 1 && ghosts_travel_dirs[ghost_nr] !== "up") {
                         choices[i] = "down";
                     }
                 }
