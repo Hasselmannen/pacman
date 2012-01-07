@@ -85,6 +85,9 @@ if (isset($_GET['ghosts'])) {
         .ghosts {
             fill: purple;
         }
+        #cherry {
+            display: none;
+        }
         #cherry > circle {
             fill: #F03;
             stroke: black;
@@ -242,6 +245,8 @@ if (isset($_GET['ghosts'])) {
         var regexp = /\((\d{1,3}),?\s?(\d{1,3})\)/;
         var time_taken = 0;
         var ball_to_eat;
+        var cherry = document.getElementById("cherry");
+        var cherry_spawned = false;
         // End of misc variables
         
         // Waypoint arrays
@@ -522,9 +527,17 @@ if (isset($_GET['ghosts'])) {
                          END OF GHOSTS
                    ************************** */
                 
-                if (time_taken >= 500) {
-                    // TODO: Cherry becomes visible/edible
+                // Code to eat the cherry
+                if (time_taken >= 2000 && cherry_spawned === false) {
+                    cherry_spawned = true;
+                    cherry.style.display = "inline";
                 }
+                else if (cherry_spawned === true && document.getElementById("cherry") !== null && player_pos[1] === 220 && player_pos[2] === 100) {
+                    cherry.parentNode.removeChild(cherry);
+                    score += 300;
+                }
+                // End of code to eat the cherry
+                
                 time_taken++;
                 
                 setTimeout(main, 20);
@@ -609,8 +622,8 @@ if (isset($_GET['ghosts'])) {
                 ghosts_travel_dirs[ghost_nr] = choices[1];
             }
         }
-        // End of function to make the ghosts chose direction at a waypoint
-
+        // End of function to make the ghosts choose direction at a waypoint
+        
         main();
     </script>
 </body>
