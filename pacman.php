@@ -446,7 +446,7 @@ if (isset($_GET['ghosts'])) {
                         }
                     }
                     edible_ghosts_timers[ghost_nr]++;
-                    if (edible_ghosts_timers[ghost_nr] >= edible_ghosts_length) {
+                    if (edible_ghosts_timers[ghost_nr] >= edible_ghosts_length && (ghosts_pos[ghost_nr][1] % 2 !== 0 || ghosts_pos[ghost_nr][2] % 2 !== 0)) {
                         edible_ghosts[ghost_nr] = false;
                         ghosts[ghost_nr].style.fill = ghosts_colors[ghost_nr];
                         ghosts_speeds[ghost_nr] = 2;
@@ -543,7 +543,6 @@ if (isset($_GET['ghosts'])) {
                 // End of code to eat the cherry
                 
                 time_taken++;
-                
                 setTimeout(main, 20);
             }
         }
