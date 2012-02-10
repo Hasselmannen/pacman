@@ -219,7 +219,7 @@ if (isset($_GET['ghosts'])) {
         var ghosts_exited_box = [];
         var ghosts_travel_dirs = [];
         var ghosts_choose_dirs = [];
-        var ghost_speed = 2;
+        var ghosts_speeds = [];
         var ghosts_colors = [];
         var edible_ghosts = [];
         var edible_ghosts_timers = [];
@@ -230,6 +230,7 @@ if (isset($_GET['ghosts'])) {
             ghosts_colors[ghost_nr] = 'purple';
             edible_ghosts[ghost_nr] = false;
             edible_ghosts_timers[ghost_nr] = 0;
+            ghosts_speeds[ghost_nr] = 2;
         }
         
         ghosts_colors[1] = 'red';
@@ -426,6 +427,7 @@ if (isset($_GET['ghosts'])) {
                 
                     // Code to make the ghosts edible when pacman is powered up
                     if (edible_ghosts[ghost_nr] === true) {
+                        ghosts_speeds[ghost_nr] = 1;
                         ghosts[ghost_nr].style.fill = 'blue';
                         if (edible_ghosts_timers[ghost_nr] > edible_ghosts_length - 10) {
                             ghosts[ghost_nr].style.fill = '#AAF';
@@ -447,6 +449,7 @@ if (isset($_GET['ghosts'])) {
                     if (edible_ghosts_timers[ghost_nr] >= edible_ghosts_length) {
                         edible_ghosts[ghost_nr] = false;
                         ghosts[ghost_nr].style.fill = ghosts_colors[ghost_nr];
+                        ghosts_speeds[ghost_nr] = 2;
                         edible_ghosts_timers[ghost_nr] = 0;
                     }
                     // End of making the ghosts edible
@@ -499,6 +502,7 @@ if (isset($_GET['ghosts'])) {
                             edible_ghosts[ghost_nr] = false;
                             edible_ghosts_timers[ghost_nr] = 0;
                             score += 100;
+                            ghosts_speeds[ghost_nr] = 2;
                         }
                         else {
                             eaten_by_ghosts = true;
@@ -508,16 +512,16 @@ if (isset($_GET['ghosts'])) {
 
                     // Ghosts' movement
                     if (ghosts_travel_dirs[ghost_nr] === "left") {
-                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1] - ghost_speed) + "," + (ghosts_pos[ghost_nr][2]) + ")");
+                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1] - ghosts_speeds[ghost_nr]) + "," + (ghosts_pos[ghost_nr][2]) + ")");
                     }
                     else if (ghosts_travel_dirs[ghost_nr] === "up") {
-                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1]) + "," + (ghosts_pos[ghost_nr][2] - ghost_speed) + ")");
+                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1]) + "," + (ghosts_pos[ghost_nr][2] - ghosts_speeds[ghost_nr]) + ")");
                     }
                     else if (ghosts_travel_dirs[ghost_nr] === "right") {
-                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1] + ghost_speed) + "," + (ghosts_pos[ghost_nr][2]) + ")");
+                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1] + ghosts_speeds[ghost_nr]) + "," + (ghosts_pos[ghost_nr][2]) + ")");
                     }
                     else {
-                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1]) + "," + (ghosts_pos[ghost_nr][2] + ghost_speed) + ")");
+                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1]) + "," + (ghosts_pos[ghost_nr][2] + ghosts_speeds[ghost_nr]) + ")");
                     }
                     // End of ghosts' movement
                     
