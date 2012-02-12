@@ -2,7 +2,7 @@
 /**
  * A Pacman game in Scalable Vector Graphics.
  * 
- * @author Johan Hasselqvist and Lars Gunther.
+ * @author Johan Hasselqvist (and Lars Gunther)
  */
 
 if (isset($_GET['ghosts'])) {
