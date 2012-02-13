@@ -11,5 +11,5 @@ It is a simple Pacman game made in SVG and JavaScript.
 
 ## Demo project for Skolverket ##
 
-+Since Lars was a consultant for Skolverket, Sweden's National Agency of Education, this game (in an early incarnation)
-+was used to demonstrate a suitable final project for IT-students at the secondary school level (approximately senior high).
+Since Lars was a consultant for Skolverket, Sweden's National Agency of Education, this game (in an early incarnation)
+was used to demonstrate a suitable final project for IT-students at the secondary school level (approximately senior high).
