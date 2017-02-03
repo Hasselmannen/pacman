@@ -589,13 +589,14 @@
         // 'priorityQueue' is an Array, with index 0 being of highest priority
         function enqueue(priorityQueue, frontierNode) {
             var insertIndex = priorityQueue.findIndex(function(elem) {
-                return elem.value <= frontierNode.value;
+                return elem.value >= frontierNode.value;
             });
 
-            if (~insertIndex) { // Not found with findIndex, insert last in queue
-                priorityQueue.push(frontierNode);
-            } else {
+            // If index is found, insert 'frontierNode' at 'insertIndex', otherwise insert it at the end of the queue
+            if (~insertIndex) {
                 priorityQueue.splice(insertIndex, 0, frontierNode);
+            } else {
+                priorityQueue.push(frontierNode);
             }
         }
 
