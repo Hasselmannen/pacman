@@ -1,0 +1,721 @@
+<!--
+ * A Pacman game in Scalable Vector Graphics.
+ *
+ * @author Johan Hasselqvist (and Lars Gunther)
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Pacman</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            width: 559px;
+            margin: 10px auto;
+        }
+        svg {
+            background-color: black;
+            border: 3px solid blue;
+            border-radius: 9px;
+        }
+        #player circle {
+            fill: yellow;
+        }
+        rect {
+            stroke: blue;
+            stroke-width: 3;
+        }
+        #ghost_box {
+            stroke: blue;
+            stroke-width: 3;
+        }
+        .ghost_btm {
+            stroke: none;
+        }
+        .ghost_eye {
+            fill: black;
+            stroke: white;
+            stroke-width: 2;
+        }
+        #ghost1 {
+            fill: red;
+        }
+        #ghost2 {
+            fill: cyan;
+        }
+        #ghost3 {
+            fill: green;
+        }
+        #ghost4 {
+            fill: pink;
+        }
+        #ghost5 {
+            fill: orange;
+        }
+        #win_or_lose_text {
+            fill: white;
+			font-size: 80px;
+			text-anchor: middle;
+        }
+        #score_text {
+            text-anchor: middle;
+			fill: white;
+        }
+		#play_text {
+			text-anchor: middle;
+			fill: white;
+		}
+        .ball {
+            fill: white;
+        }
+        .ghosts {
+            fill: purple;
+        }
+        #cherry {
+            display: none;
+        }
+        #cherry > circle {
+            fill: #F03;
+            stroke: black;
+            stroke-width: 1;
+        }
+        #cherry > path {
+            stroke: green;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body>
+    <svg id="pacmanSVG"
+         version="1.1"
+         baseProfile="full"
+         width="550"
+         height="550"
+         viewbox="0 0 400 400">
+
+    </svg>
+    <script>
+
+	var SVGNS = "http://www.w3.org/2000/svg";
+	var XLinkNS = "http://www.w3.org/1999/xlink";
+
+	function startPacman() {
+
+		var newElement;
+
+		newElement = document.createElementNS(SVGNS, "defs");
+		newElement.innerHTML = "<g id='ghosts'>"
+                + "<rect   class='ghost_btm'  x='-12' y='0' height='14' width='24' />"
+                + "<circle class='ghost_top' cx='0'  cy='0'  r='12' />"
+                + "<circle class='ghost_eye' cx='-5' cy='-3' r='2' />"
+                + "<circle class='ghost_eye' cx='5'  cy='-3' r='2' />"
+				+ "</g>";
+		document.getElementById("pacmanSVG").appendChild(newElement);
+
+		newElement = document.createElementNS(SVGNS, "g");
+		newElement.setAttribute("id", "cherry");
+		newElement.setAttribute("transform", "translate(220,100)");
+		newElement.innerHTML = "<path d='M 5 0 C 0 -13 -13 -11 -13 -13 C -2 -4 -6 -8 0 3' />"
+								+ "<circle cx='5' cy='0' r='6' />"
+								+ "<circle cx='0' cy='3' r='6' />";
+        document.getElementById("pacmanSVG").appendChild(newElement);
+
+		newElement = document.createElementNS(SVGNS, "g");
+		newElement.setAttribute("id", "player");
+		newElement.setAttribute("transform", "translate(220,100) rotate(0)");
+		newElement.innerHTML = "<circle cx='0' cy='0' r='15' />"
+							+ "<polygon id='mouth' points='0,0 -16,-7 -16,7' />";
+		document.getElementById("pacmanSVG").appendChild(newElement);
+
+		for (y = 20; y < 400; y += 40) {
+			for (x = 20; x < 400; x += 40) {
+				if (!(x >= 120 && x <= 260 && y >= 120 && y <= 240)) {
+					newElement = document.createElementNS(SVGNS, "circle");
+					newElement.setAttribute("id", "ball_" + x + "_" + y);
+					newElement.setAttribute("class", "ball");
+					newElement.setAttribute("cx", x);
+					newElement.setAttribute("cy", y);
+					if ((x === 20 || x === 380) && (y === 20 || y === 380)) {
+						newElement.setAttribute("r", 7);
+					}
+					else {
+						newElement.setAttribute("r", 4);
+					}
+					document.getElementById("pacmanSVG").appendChild(newElement);
+				}
+			}
+		}
+
+		newElement = document.createElementNS(SVGNS,"g");
+		newElement.innerHTML = "<rect x='40' y='40' height='40' width='160' />"
+				+ "<rect x='240' y='40' height='40' width='120' />"
+				+ "<rect x='-3' y='120' height='40' width='83' />"
+				+ "<rect x='320' y='120' height='40' width='83' />"
+				+ "<polygon id='ghost_box' points='140,220 184,220 184,240 120,240 120,120 280,120 280,240 216,240 216,220 260,220 260,140 140,140' />"
+				+ "<rect x='40' y='200' height='40' width='40' />"
+				+ "<rect x='320' y='200' height='40' width='40' />"
+				+ "<rect x='40' y='280' height='40' width='80' />"
+				+ "<rect x='160' y='280' height='40' width='80' />"
+				+ "<rect x='280' Y='280' height='40' width='80' />"
+				+ "<rect x='40' y='360' height='43' width='320' />";
+		document.getElementById("pacmanSVG").appendChild(newElement);
+
+		newElement = document.createElementNS(SVGNS, "text");
+		newElement.setAttribute("x", "200");
+		newElement.setAttribute("y", "200");
+		newElement.setAttribute("id", "win_or_lose_text");
+		document.getElementById("pacmanSVG").appendChild(newElement);
+
+		newElement = document.createElementNS(SVGNS, "text");
+		newElement.setAttribute("x", "200");
+		newElement.setAttribute("y", "385");
+		newElement.setAttribute("id", "score_text");
+		document.getElementById("pacmanSVG").appendChild(newElement);
+
+        // Player variables
+        var player = document.getElementById("player");
+        var mouth = document.getElementById("mouth");
+        var player_info;
+        var player_pos;
+        var pacman_current_key;
+        var player_travel_dir;
+        var player_speed = 2;
+        var opening_mouth = false;
+        var mouth_width = 0;
+        var eaten_by_ghosts = false;
+        var total_balls_eaten = 0;
+        var score = 0;
+        // End of player variables
+
+        // Ghost variables
+        var nrGhosts = 6;
+        var ghosts = [];
+        var ghosts_info = [];
+        var ghosts_pos = [];
+        var ghosts_exited_box = [];
+        var ghosts_travel_dirs = [];
+        var ghosts_choose_dirs = [];
+        var ghosts_speeds = [];
+        var ghosts_colors = [];
+        var edible_ghosts = [];
+        var edible_ghosts_timers = [];
+        var edible_ghosts_length = 500;
+
+        for (var ghost_nr = 1; ghost_nr <= nrGhosts; ghost_nr++) {
+            newElement = document.createElementNS(SVGNS, "use");
+            newElement.setAttributeNS(XLinkNS, "href", "#ghosts");
+            newElement.setAttribute("transform", "translate(" + (160 + 40 * ((ghost_nr - 1) % 3)) + ", " + (160 + 40 * parseInt((ghost_nr - 1) / 3)) + ")");
+            newElement.setAttribute("x", "0");
+            newElement.setAttribute("y", "0");
+            newElement.setAttribute("width", "24");
+            newElement.setAttribute("height", "26");
+            newElement.setAttribute("id", "ghost" + ghost_nr);
+            newElement.setAttribute("class", "ghosts");
+            document.getElementById("pacmanSVG").appendChild(newElement);
+
+
+            ghosts[ghost_nr] = newElement;
+            ghosts_colors[ghost_nr] = 'purple';
+            edible_ghosts[ghost_nr] = false;
+            edible_ghosts_timers[ghost_nr] = 0;
+            ghosts_speeds[ghost_nr] = 2;
+        }
+
+        ghosts_colors[1] = 'red';
+        ghosts_colors[2] = 'cyan';
+        ghosts_colors[3] = 'green';
+        ghosts_colors[4] = 'pink';
+        ghosts_colors[5] = 'orange';
+        // End of ghost variables
+
+        // Misc variables
+        var pacmanSVG = document.getElementById("pacmanSVG");
+        var win_or_lose_text = document.getElementById("win_or_lose_text");
+        var regexp = /\((\d{1,3}),?\s?(\d{1,3})\)/;
+        var time_taken = 0;
+        var ball_to_eat;
+        var cherry = document.getElementById("cherry");
+        var cherry_spawned = false;
+        // End of misc variables
+
+        // Waypoint arrays
+        var waypoint_arrays = [];
+        for (var i = 20; i <= 380; i += 40) {
+            waypoint_arrays[i] = [];
+        }
+        waypoint_arrays[20][20] = [0, 0, 1, 1];
+        waypoint_arrays[220][20] = [1, 0, 1, 1];
+        waypoint_arrays[380][20] = [1, 0, 0, 1];
+        waypoint_arrays[20][100] = [0, 1, 1, 0];
+        waypoint_arrays[100][100] = [1, 0, 1, 1];
+        waypoint_arrays[220][100] = [1, 1, 1, 0];
+        waypoint_arrays[300][100] = [1, 0, 1, 1];
+        waypoint_arrays[380][100] = [1, 1, 0, 0];
+        waypoint_arrays[20][180] = [0, 0, 1, 1];
+        waypoint_arrays[100][180] = [1, 1, 0, 1];
+        waypoint_arrays[300][180] = [0, 1, 1, 1];
+        waypoint_arrays[380][180] = [1, 0, 0, 1];
+        waypoint_arrays[20][260] = [0, 1, 1, 1];
+        waypoint_arrays[100][260] = [1, 1, 1, 0];
+        waypoint_arrays[140][260] = [1, 0, 1, 1];
+        waypoint_arrays[260][260] = [1, 0, 1, 1];
+        waypoint_arrays[300][260] = [1, 1, 1, 0];
+        waypoint_arrays[380][260] = [1, 1, 0, 1];
+        waypoint_arrays[20][340] = [0, 1, 1, 1];
+        waypoint_arrays[140][340] = [1, 1, 1, 0];
+        waypoint_arrays[260][340] = [1, 1, 1, 0];
+        waypoint_arrays[380][340] = [1, 1, 0, 1];
+        waypoint_arrays[20][380] = [0, 1, 0, 0];
+        waypoint_arrays[380][380] = [0, 1, 0, 0];
+        // End of waypoint arrays
+
+        /* **************************
+             START OF MAIN FUNCTION
+           ************************** */
+        function pacman() {
+            document.getElementById("score_text").innerHTML = "Score: " + parseInt((score - time_taken / 10), 10);
+
+            if (total_balls_eaten === 61) {
+                win_or_lose_text.innerHTML = "You won";
+                document.getElementById("pacmanSVG").appendChild(play_text);
+                playingPacman = false;
+                return;
+            } else if (eaten_by_ghosts === true) {
+                win_or_lose_text.innerHTML = "Game over";
+                document.getElementById("pacmanSVG").appendChild(play_text);
+                playingPacman = false;
+                return;
+            } else {
+                /* **************************
+                        START OF PLAYER
+                   ************************** */
+
+                // Check player-position
+                player_info = player.getAttribute("transform");
+                player_pos = player_info.match(regexp);
+                player_pos[1] = parseFloat(player_pos[1]);
+                player_pos[2] = parseFloat(player_pos[2]);
+                // End of checking player-position
+
+                // Code so that Pacman can instantly turn around
+                if (pacman_current_key === "left" && player_travel_dir === "right") {
+                    player_travel_dir = "left";
+                } else if (pacman_current_key === "up" && player_travel_dir === "down") {
+                    player_travel_dir = "up";
+                } else if (pacman_current_key === "right" && player_travel_dir === "left") {
+                    player_travel_dir = "right";
+                } else if (pacman_current_key === "down" && player_travel_dir === "up") {
+                    player_travel_dir = "down";
+                }
+                // End of code so that pacman can turn around
+
+                // Start of if-statements that checks when pacman is at a waypoint, and then changes dir depending on which key was pressed
+                if ((player_pos[1] + 20) % 40 === 0 && (player_pos[2] + 20) % 40 === 0) {
+                    if (typeof(waypoint_arrays[player_pos[1]][player_pos[2]]) !== "undefined") {
+                        if (pacman_current_key === "left" && waypoint_arrays[player_pos[1]][player_pos[2]][0] === 1) {
+                            player_travel_dir = "left";
+                        } else if (pacman_current_key === "up" && waypoint_arrays[player_pos[1]][player_pos[2]][1] === 1) {
+                            player_travel_dir = "up";
+                        } else if (pacman_current_key === "right" && waypoint_arrays[player_pos[1]][player_pos[2]][2] === 1) {
+                            player_travel_dir = "right";
+                        } else if (pacman_current_key === "down" && waypoint_arrays[player_pos[1]][player_pos[2]][3] === 1) {
+                            player_travel_dir = "down";
+                        }
+                    }
+                }
+                // End of if-statements for turning
+
+                // If-statements to move Pacman if he is allowed to travel that way
+                if (typeof(waypoint_arrays[player_pos[1]]) === "undefined" || typeof(waypoint_arrays[player_pos[1]][player_pos[2]]) === "undefined") {
+                    if (player_travel_dir === "left") {
+                        player.setAttribute("transform", "translate(" + (player_pos[1] - player_speed) + "," + (player_pos[2]) + ") rotate(0)");
+                    } else if (player_travel_dir === "up") {
+                        player.setAttribute("transform", "translate(" + (player_pos[1]) + "," + (player_pos[2] - player_speed) + ") rotate(90)");
+                    } else if (player_travel_dir === "right") {
+                        player.setAttribute("transform", "translate(" + (player_pos[1] + player_speed) + "," + (player_pos[2]) + ") rotate(180)");
+                    } else if (player_travel_dir === "down") {
+                        player.setAttribute("transform", "translate(" + (player_pos[1]) + "," + (player_pos[2] + player_speed) + ") rotate(270)");
+                    }
+                } else if (player_travel_dir === "left" && waypoint_arrays[player_pos[1]][player_pos[2]][0] === 1) {
+                    player.setAttribute("transform", "translate(" + (player_pos[1] - player_speed) + "," + (player_pos[2]) + ") rotate(0)");
+                } else if (player_travel_dir === "up" && waypoint_arrays[player_pos[1]][player_pos[2]][1] === 1) {
+                    player.setAttribute("transform", "translate(" + (player_pos[1]) + "," + (player_pos[2] - player_speed) + ") rotate(90)");
+                } else if (player_travel_dir === "right" && waypoint_arrays[player_pos[1]][player_pos[2]][2] === 1) {
+                    player.setAttribute("transform", "translate(" + (player_pos[1] + player_speed) + "," + (player_pos[2]) + ") rotate(180)");
+                } else if (player_travel_dir === "down" && waypoint_arrays[player_pos[1]][player_pos[2]][3] === 1) {
+                    player.setAttribute("transform", "translate(" + (player_pos[1]) + "," + (player_pos[2] + player_speed) + ") rotate(270)");
+                }
+                // End of if-statements that moves Pacman when he is allowed to
+
+                // Animated mouth
+                if (opening_mouth === true) {
+                    mouth_width += 1.5;
+                    if (mouth_width >= 20) {
+                        opening_mouth = false;
+                    }
+                } else {
+                    mouth_width -= 1.5;
+                    if (mouth_width <= 0) {
+                        opening_mouth = true;
+                    }
+                }
+                mouth.setAttribute("points", ("0,0 -16," + (-mouth_width / 2) + " -16," + (mouth_width / 2)));
+                // End of animated mouth
+
+                // Code to eat the balls, if it is a "special" ball, make the ghosts edible
+                for (var y = 20; y <= 400; y += 40) {
+                    for (var x = 20; x <= 400; x += 40) {
+                        if (player_pos[1] <= x + 10 && player_pos[1] >= x - 10 && player_pos[2] <= y + 10 && player_pos[2] >= y - 10 && document.getElementById("ball_" + x + "_" + y) !== null) {
+                            ball_to_eat = document.getElementById("ball_" + x + "_" + y);
+                            ball_to_eat.parentNode.removeChild(ball_to_eat);
+                            total_balls_eaten++;
+                            if (ball_to_eat.getAttribute("r") > 5) {
+                                for (ghost_nr = 1; ghost_nr <= nrGhosts; ghost_nr++) {
+                                    edible_ghosts[ghost_nr] = true;
+                                    edible_ghosts_timers[ghost_nr] = 0;
+                                }
+                            }
+                        }
+                    }
+                    if (player_pos[1] <= 30 && player_pos[1] >= 10 && player_pos[2] <= y + 10 && player_pos[2] >= y - 10 && document.getElementById("ball_20_" + y) !== null) {
+                        ball_to_eat = document.getElementById("ball_20_" + y);
+                        ball_to_eat.parentNode.removeChild(ball_to_eat);
+                        total_balls_eaten++;
+                        if (ball_to_eat.getAttribute("r") > 5) {
+                            for (ghost_nr = 1; ghost_nr <= nrGhosts; ghost_nr++) {
+                                edible_ghosts[ghost_nr] = true;
+                                edible_ghosts_timers[ghost_nr] = 0;
+                            }
+                        }
+                    }
+                }
+                // End of code to eat the balls
+
+
+                /* **************************
+                         END OF PLAYER
+                   ************************** */
+
+
+                /* **************************
+                        START OF GHOSTS
+                   ************************** */
+
+                for (ghost_nr = 1; ghost_nr <= nrGhosts; ghost_nr++) {
+
+                    // Code to make the ghosts edible when pacman is powered up
+                    if (edible_ghosts[ghost_nr] === true) {
+                        ghosts_speeds[ghost_nr] = 1;
+                        ghosts[ghost_nr].style.fill = 'blue';
+                        if (edible_ghosts_timers[ghost_nr] > edible_ghosts_length - 10) {
+                            ghosts[ghost_nr].style.fill = '#AAF';
+                        } else if (edible_ghosts_timers[ghost_nr] > edible_ghosts_length - 20) {
+                            ghosts[ghost_nr].style.fill = 'blue';
+                        } else if (edible_ghosts_timers[ghost_nr] > edible_ghosts_length - 30) {
+                            ghosts[ghost_nr].style.fill = '#AAF';
+                        } else if (edible_ghosts_timers[ghost_nr] > edible_ghosts_length - 40) {
+                            ghosts[ghost_nr].style.fill = 'blue';
+                        } else if (edible_ghosts_timers[ghost_nr] > edible_ghosts_length - 50) {
+                            ghosts[ghost_nr].style.fill = '#AAF';
+                        }
+                    }
+                    edible_ghosts_timers[ghost_nr]++;
+                    if (edible_ghosts_timers[ghost_nr] >= edible_ghosts_length && (ghosts_pos[ghost_nr][1] % 2 !== 0 || ghosts_pos[ghost_nr][2] % 2 !== 0)) {
+                        edible_ghosts[ghost_nr] = false;
+                        ghosts[ghost_nr].style.fill = ghosts_colors[ghost_nr];
+                        ghosts_speeds[ghost_nr] = 2;
+                        edible_ghosts_timers[ghost_nr] = 0;
+                    }
+                    // End of making the ghosts edible
+
+                    // Check ghost-positions
+                    ghosts_info[ghost_nr] = ghosts[ghost_nr].getAttribute("transform");
+                    ghosts_pos[ghost_nr] = ghosts_info[ghost_nr].match(regexp);
+                    ghosts_pos[ghost_nr][1] = parseFloat(ghosts_pos[ghost_nr][1]);
+                    ghosts_pos[ghost_nr][2] = parseFloat(ghosts_pos[ghost_nr][2]);
+                    // End of checking ghost-positions
+
+                    // Code to make the ghosts first get out of the box and then turn at waypoints
+                    if (ghosts_exited_box[ghost_nr] === true) {
+                        // TODO: Combine this with the function that makes ghosts choose direction at waypoints, instead of having very similar code at multiple places
+                        if ((ghosts_pos[ghost_nr][1] + 20) % 40 === 0 && (ghosts_pos[ghost_nr][2] + 20) % 40 === 0) {
+                            if (typeof(waypoint_arrays[ghosts_pos[ghost_nr][1]][ghosts_pos[ghost_nr][2]]) !== "undefined") {
+                                ghosts_at_waypoint(ghost_nr, ghosts_pos[ghost_nr][1], ghosts_pos[ghost_nr][2]);
+                            }
+                        }
+                    } else {
+                        if (ghosts_pos[ghost_nr][2] === 260) {
+                            if (Math.random() > 0.5) {
+                                ghosts_travel_dirs[ghost_nr] = "right";
+                            } else {
+                                ghosts_travel_dirs[ghost_nr] = "left";
+                            }
+                            ghosts_exited_box[ghost_nr] = true;
+                        } else if (ghosts_pos[ghost_nr][1] < 200) {
+                            ghosts_travel_dirs[ghost_nr] = "right";
+                        } else if (ghosts_pos[ghost_nr][1] > 200) {
+                            ghosts_travel_dirs[ghost_nr] = "left";
+                        } else {
+                            ghosts_travel_dirs[ghost_nr] = "down";
+                        }
+                    }
+                    // End of code to make the ghosts turn
+
+                    // Check if Pacman collides with a ghost
+                    if (ghosts_pos[ghost_nr][1] < (player_pos[1] + 10) && ghosts_pos[ghost_nr][1] > (player_pos[1] - 10) && ghosts_pos[ghost_nr][2] < (player_pos[2] + 10) && ghosts_pos[ghost_nr][2] > (player_pos[2] - 10)) {
+                        if (edible_ghosts[ghost_nr] === true) {
+                            ghosts_pos[ghost_nr][1] = 200;
+                            ghosts_pos[ghost_nr][2] = 200;
+                            ghosts_exited_box[ghost_nr] = false;
+                            ghosts[ghost_nr].style.fill = ghosts_colors[ghost_nr];
+                            edible_ghosts[ghost_nr] = false;
+                            edible_ghosts_timers[ghost_nr] = 0;
+                            score += 100;
+                            ghosts_speeds[ghost_nr] = 2;
+                        } else {
+                            eaten_by_ghosts = true;
+                        }
+                    }
+                    // End of pacman-ghost collision
+
+                    // Ghosts' movement
+                    if (ghosts_travel_dirs[ghost_nr] === "left") {
+                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1] - ghosts_speeds[ghost_nr]) + "," + (ghosts_pos[ghost_nr][2]) + ")");
+                    } else if (ghosts_travel_dirs[ghost_nr] === "up") {
+                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1]) + "," + (ghosts_pos[ghost_nr][2] - ghosts_speeds[ghost_nr]) + ")");
+                    } else if (ghosts_travel_dirs[ghost_nr] === "right") {
+                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1] + ghosts_speeds[ghost_nr]) + "," + (ghosts_pos[ghost_nr][2]) + ")");
+                    } else {
+                        ghosts[ghost_nr].setAttribute("transform", "translate(" + (ghosts_pos[ghost_nr][1]) + "," + (ghosts_pos[ghost_nr][2] + ghosts_speeds[ghost_nr]) + ")");
+                    }
+                    // End of ghosts' movement
+
+                }
+
+                /* **************************
+                         END OF GHOSTS
+                   ************************** */
+
+                // Code to eat the cherry
+                if (time_taken >= 2000 && cherry_spawned === false) {
+                    cherry_spawned = true;
+                    cherry.style.display = "inline";
+                } else if (cherry_spawned === true && document.getElementById("cherry") !== null && player_pos[1] === 220 && player_pos[2] === 100) {
+                    cherry.parentNode.removeChild(cherry);
+                    score += 300;
+                }
+                // End of code to eat the cherry
+
+                time_taken++;
+                setTimeout(pacman, 20);
+            }
+        }
+        /* **************************
+              END OF MAIN FUNCTION
+           ************************** */
+
+        // Key-pressing function
+        document.onkeydown = function(event) {
+
+                var e = event.keyCode;
+
+                switch (e) {
+                    case 37:
+                        pacman_current_key = "left";
+                        break;
+                    case 38:
+                        pacman_current_key = "up";
+                        break;
+                    case 39:
+                        pacman_current_key = "right";
+                        break;
+                    case 40:
+                        pacman_current_key = "down";
+                        break;
+                    default:
+                }
+            }
+            // End of key-pressing function
+
+        // -----------------------
+        // -- Start of AI additions
+        // -----------------------
+        // Function to make the ghosts choose direction when at a waypoint
+        function ghosts_at_waypoint(ghost_nr, x, y) {
+            var target = [player_pos[1], player_pos[2]];
+
+            // Make sure that the target is the closest waypoint in front of the player
+            switch (player_travel_dir) {
+                case "left":
+                    target[0] -= target[0] % 40;
+                    target[0] += 20;
+                    while (typeof(waypoint_arrays[target[0]][target[1]]) === "undefined") target[0] -= 40;
+                    break;
+                case "up":
+                    target[1] -= target[1] % 40;
+                    target[1] += 20;
+                    while (typeof(waypoint_arrays[target[0]][target[1]]) === "undefined") target[1] -= 40;
+                    break;
+                case "right":
+                    target[0] -= target[0] % 40;
+                    target[0] += 20;
+                    while (typeof(waypoint_arrays[target[0]][target[1]]) === "undefined") target[0] += 40;
+                    break;
+                case "down":
+                    target[1] -= target[1] % 40;
+                    target[1] += 20;
+                    while (typeof(waypoint_arrays[target[0]][target[1]]) === "undefined") target[1] += 40
+                    break;
+                default:
+                    break;
+            }
+
+            // A-star search for the optimal way to the target
+            var travelDir = aStar([x, y], target, ghosts_travel_dirs[ghost_nr]);
+            // If there is no waypoint between the ghost and player, move towards the player
+            if (!travelDir) {
+                if (x - player_pos[1] > 0) travelDir = "left";
+                else if (x - player_pos[1] < 0) travelDir = "right";
+                else if (y - player_pos[2] > 0) travelDir = "up";
+                else travelDir = "down";
+            }
+
+            ghosts_travel_dirs[ghost_nr] = travelDir;
+
+        }
+        // End of function to make the ghosts choose direction at a waypoint
+
+        // 'priorityQueue' is an Array, with index 0 being of highest priority
+        function enqueue(priorityQueue, frontierNode) {
+            var insertIndex = priorityQueue.findIndex(function(elem) {
+                return elem.value <= frontierNode.value;
+            });
+
+            if (~insertIndex) { // Not found with findIndex, insert last in queue
+                priorityQueue.push(frontierNode);
+            } else {
+                priorityQueue.splice(insertIndex, 0, frontierNode);
+            }
+        }
+
+        function dequeue(priorityQueue) {
+            return priorityQueue.shift();
+        }
+
+        // Checks if a 'nodePos' (an array [x, y]) is in 'arr'
+        function contains(arr, nodePos) {
+            return ~arr.findIndex(function(elem) {
+                return elem[0] === nodePos[0] && elem[1] === nodePos[1];
+            });
+        }
+
+        // A 'FrontierNode' represents a path of waypoints. 'cost' is the total cost of the path,
+        // while the calculated 'value' is an (under)estimate of the total cost for the path all the way to the
+        // goal waypoint.
+        function FrontierNode(nodePos, prev, cost, goalPos, incomingTravelDir) {
+            this.node = nodePos;
+            this.prev = prev;
+            this.cost = cost;
+            this.value = cost + Math.abs(goalPos[0] - nodePos[0]) + Math.abs(goalPos[1] - nodePos[1]);
+            this.incomingTravelDir = incomingTravelDir;
+        }
+
+        // Returns the required direction choice for the first waypoint in the path.
+        FrontierNode.prototype.getAction = function() {
+            var lastNode = this;
+            var secondLast;
+            while (lastNode.prev) {
+                secondLast = lastNode;
+                lastNode = lastNode.prev;
+            }
+            if (!secondLast) return null;
+            return secondLast.incomingTravelDir;
+        }
+
+        function aStar(startPos, goalPos, incomingTravelDir) {
+
+            var iterations = 0;
+
+            var visited = new Array();
+            var frontier = new Array();
+            enqueue(frontier, new FrontierNode(startPos, null, 0, goalPos, incomingTravelDir));
+
+            while (frontier.length > 0) {
+                var frontierNode = dequeue(frontier);
+
+                // Skip if the node has already been visited
+                if (contains(visited, frontierNode.node)) continue;
+
+                visited.push(frontierNode.node);
+                // We found the goal node, reconstruct the path there
+                if (frontierNode.node[0] === goalPos[0] && frontierNode.node[1] === goalPos[1]) return frontierNode.getAction();
+
+                var availableDirectionArray = waypoint_arrays[frontierNode.node[0]][frontierNode.node[1]];
+
+                if (availableDirectionArray[0] && frontierNode.incomingTravelDir !== "right") {
+                    for (var x = frontierNode.node[0] - 40; x > 0; x -= 40) {
+                        if (typeof(waypoint_arrays[x][frontierNode.node[1]]) === "undefined") continue;
+                        if (contains(visited, [x, frontierNode.node[1]])) break;
+                        enqueue(frontier, new FrontierNode([x, frontierNode.node[1]], frontierNode, frontierNode.cost + (frontierNode.node[0] - x), goalPos, "left"));
+                    }
+                }
+                if (availableDirectionArray[1] && (frontierNode.incomingTravelDir !== "down" || frontierNode[1] === 380)) {
+                    for (var y = frontierNode.node[1] - 40; y > 0; y -= 40) {
+                        if (typeof(waypoint_arrays[frontierNode.node[0]][y]) === "undefined") continue;
+                        if (contains(visited, [frontierNode.node[0], y])) break;
+                        enqueue(frontier, new FrontierNode([frontierNode.node[0], y], frontierNode, frontierNode.cost + (frontierNode.node[1] - y), goalPos, "up"));
+                    }
+                }
+                if (availableDirectionArray[2] && frontierNode.incomingTravelDir !== "left") {
+                    for (var x = frontierNode.node[0] + 40; x < 400; x += 40) {
+                        if (typeof(waypoint_arrays[x][frontierNode.node[1]]) === "undefined") continue;
+                        if (contains(visited, [x, frontierNode.node[1]])) break;
+                        enqueue(frontier, new FrontierNode([x, frontierNode.node[1]], frontierNode, frontierNode.cost + (x - frontierNode.node[0]), goalPos, "right"));
+                    }
+                }
+                if (availableDirectionArray[3] && frontierNode.incomingTravelDir !== "up") {
+                    for (var y = frontierNode.node[1] + 40; y < 400; y += 40) {
+                        if (typeof(waypoint_arrays[frontierNode.node[0]][y]) === "undefined") continue;
+                        if (contains(visited, [frontierNode.node[0], y])) break;
+                        enqueue(frontier, new FrontierNode([frontierNode.node[0], y], frontierNode, frontierNode.cost + (y - frontierNode.node[1]), goalPos, "down"));
+                    }
+                }
+
+                // Give up if search has taken too long
+                if (iterations > 1000) {
+                    throw new Error("Error: No path found within the time limit.");
+                }
+                iterations++;
+            }
+            // No path was found
+            throw new Error("Error: No valid path to target.");
+
+            // -----------------------
+            // -- End of AI additions
+            // -----------------------
+        }
+
+        pacman();
+        }
+
+        var playingPacman = false;
+
+        var play_text = document.createElementNS(SVGNS, "text");
+        play_text.setAttribute("x", "200");
+        play_text.setAttribute("y", "230");
+        play_text.setAttribute("id", "play_text");
+        play_text.innerHTML = "Click to play";
+        document.getElementById("pacmanSVG").appendChild(play_text);
+
+        document.getElementById("pacmanSVG").onclick = function() {
+            if (!playingPacman) {
+                document.getElementById("pacmanSVG").innerHTML = "";
+                playingPacman = true;
+                startPacman();
+            }
+        }
+
+    </script>
+</body>
+</html>
